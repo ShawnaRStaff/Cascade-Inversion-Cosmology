@@ -194,6 +194,24 @@ This is the only diagnostic out of six that does not give a clean match
 at p = 0.65. It is not a clean falsification either; it is a measurement
 that needs a fairer comparison protocol to interpret.
 
+**Follow-up (same evening):** refit applied with successive minimum-size
+cuts (2, 5, 10, 20, 50, 100 cells) to mimic the size cuts real
+cosmic-void surveys impose. At p = 0.65 the slope stays at α ~ 3.0
+across all cuts where statistics permit a fit, so the steep slope is
+NOT primarily a pixel-counting artifact. However, at p = 0.60 with
+cut >= 20 cells (~170 Mpc), the slope is α = 2.03 — **in the cosmic-
+void reference range of 1.5-2.0**.
+
+The implication: the void-slope match happens at p ≈ 0.60, slightly
+below where γ matches (p = 0.65). Other diagnostics (γ slope, event
+CV, frozen pockets, interface D, matter-to-void distance) all favor
+p = 0.65. The cosmologically meaningful state is therefore a *narrow
+range* of p, not a single value: p ≈ 0.62 ± 0.03 covers the spread
+across all six observables. Different cosmological observables are
+most informative at slightly different stages of the substrate's
+evolution. Statistical thinness at high min-size cuts limits the
+precision; a multi-box run would tighten this.
+
 ### What this combined picture says
 
 We started the day with one match (γ at p=0.65) and a free time-mapping
