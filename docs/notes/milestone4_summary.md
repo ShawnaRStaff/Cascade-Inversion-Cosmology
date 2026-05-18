@@ -212,34 +212,160 @@ most informative at slightly different stages of the substrate's
 evolution. Statistical thinness at high min-size cuts limits the
 precision; a multi-box run would tighten this.
 
-### What this combined picture says
+### What this combined picture says (revised 2026-05-18 morning)
 
-We started the day with one match (γ at p=0.65) and a free time-mapping
-parameter to make γ(z) match. We end the day with **five independent
-measurements converging on p ≈ 0.65** — γ slope, event-rate concentration
-peak, cosmic-web-like void topology, interface fractal dimension peak,
-and matter-to-void distance distribution. All five are direct geometric
-or topological tests on the same dataset. The sixth is approaching the
-observed range at slightly higher p but does not provide a clean match
-at p = 0.65 with the current comparison protocol.
+The evening writeup claimed "five convergent signals at p=0.65" and
+proposed a non-linear-time mechanism (galaxies have slow local clocks
+because they sit in low-event regions) as explanation for the observed
+flatness of γ(z) across cosmic history. With the extended data
+(snapshots added at p=0.85 and p=0.90) and the actual implementation
+test of the non-linear-time mechanism, that picture has to be retracted
+substantially. The honest status is more limited.
 
-The physical mechanism that emerges: **if "time" is the local count of
-fracture events rather than a uniform external parameter, then time
-flows much faster on the active interface than in the cluster interior
-or in the frozen pockets. Galaxies sitting in the cracked region (which
-we are) have slow local clocks; from our perspective the universe appears
-in a quasi-static state with the structure we see, even though the
-substrate as a whole is evolving rapidly.**
+**Convergent-signal claim — partially retracted.**
 
-This is not the "compatible-under-tuning" verdict we had this morning.
-It is a single dynamical state of the model from which the principal
-geometric features of observed cosmic structure emerge naturally.
+After extending the data to p=0.90:
+- γ exact match at p=0.65: STILL HOLDS (real, measured)
+- Interface fractal D peak at p=0.60-0.65: STILL HOLDS
+- Matter-on-filaments through p~0.80: STILL HOLDS in the cosmologically
+  relevant regime
+- Event-rate spatial CV "peak at 0.65-0.70": FAILED. With p=0.85 and 0.90
+  data, the CV continues to rise (0.88, 0.94). There is no peak at 0.65;
+  the rise is monotonic toward saturation.
+- Frozen-pocket count "peak at 0.65": FAILED. With extended data the
+  peak is at p=0.80 (14k pockets), not p=0.65 (9k).
+- Void slope α: still does not match cosmic-void reference at p=0.65;
+  approaches the reference range at p~0.85-0.90.
 
-The state lives at p ≈ 0.65 of the substrate's total cascading lifetime.
-What we call the Big Bang may be the *percolation* event at p_c ≈ 0.18;
-the "now" we observe is the long, slow middle phase of substrate
-evolution; the inversion event (M5 territory) is still in the future of
-the model's dynamical timeline.
+Three robust signals at p ≈ 0.65 (not five). Three previously-claimed
+signals at p=0.65 were artifacts of stopping at p=0.80; with more data,
+they continue to evolve past 0.65 rather than peaking there.
+
+**Non-linear-time mechanism — falsified.**
+
+A direct test of the local-clock hypothesis was implemented in
+scripts/run_milestone4_local_clock.py. Several observer regions were
+defined (central cubes of various sizes; early-cracked regions standing
+in for galaxies-in-old-matter), and the cumulative local event count
+was computed as a function of global p for each observer. We then
+compared the model's γ(global_p) curve to the observer-local-time axis.
+
+Result: γ does NOT flatten when viewed in observer-local-time. For
+extended observer regions (central cubes), γ changes nearly as quickly
+in observer-local-time as in global p (ratio ~1.2). For early-cracked
+observers, the entire range of γ(0.18 to 0.90, i.e., 3.25 to 0.84)
+collapses to a single point in local time, which is the opposite of
+flatness, not flatness.
+
+The hypothesis is incompatible with the actual measurement. The
+non-linear-time route to explaining flat γ(z) is closed.
+
+**Where M4 actually stands (honest verdict).**
+
+- γ(p=0.65) = 1.80 exact match to galaxy ξ(r) slope. Real, measured,
+  robust. Single best signal.
+- Cluster mass function τ_s ≈ 2.05 at p ≈ p_c. Match within ~5%.
+- Interface fractal D ≈ 2.5 (lattice-corrected) at p ≈ 0.60-0.65. In
+  cosmic-web filament/wall range.
+- Matter on filaments through p ≈ 0.80. Qualitative match to observed
+  galaxy distribution.
+
+Four direct empirical hits at specific p values in the model's
+dynamical evolution. They are clustered in a narrow p-range
+(0.18 < p_match < 0.65) — but they are not all at exactly the same p,
+and the model does NOT yet predict why the universe should be at any
+particular one of those p values during the observable epoch.
+
+The model passes individual snapshot-comparison tests. The model does
+NOT pass the test of explaining cosmic-time evolution. The flat γ(z)
+across z = 0 to 3 is incompatible with the model's monotonic γ(p)
+under any local-event-time interpretation we have been able to
+construct.
+
+The "compatible-under-tuning" verdict from the morning of 2026-05-17
+is therefore the right verdict, not the "convergent prediction" claim
+from the evening of the same day. The evening claim was based on
+incomplete data and a hypothesis that did not survive its own
+implementation test.
+
+### Avalanche statistics: an eye-of-the-storm structure (added 2026-05-18)
+
+The avalanche size and duration arrays were saved per-drop in the
+extended run. Reading them and computing the avalanche size distribution
+in each p-window produced a result we had not characterized previously
+and that bears directly on the "why is the universe at p ~ 0.65"
+problem.
+
+Three measurements on the per-drop avalanche size data:
+
+**(1) Avalanche-size distribution shape is approximately stationary
+across p in [0.25, 0.80].** Fitting P(s) = A s^(-tau_s) exp(-s/s_c)
+to the pooled avalanches in each p-window:
+
+| p-window | tau_s |
+|----------|-------|
+| 0.18-0.25 | 1.99 |
+| **0.25-0.35** | **1.31** |
+| **0.35-0.50** | **1.39** |
+| **0.50-0.55** | **1.33** |
+| **0.55-0.60** | **1.30** |
+| **0.60-0.65** | **1.35** |
+| **0.65-0.70** | **1.18** |
+| **0.70-0.80** | **1.22** |
+| 0.80-0.85 | 1.32 |
+| 0.85-0.90 | 1.35 |
+
+Excluding the first window after percolation (still settling into the
+SOC steady state), tau_s = 1.30 +/- 0.07 across p = 0.25 - 0.80. That
+is the avalanche-size slope holding effectively constant across nearly
+the entire post-percolation regime up to the storm-building phase.
+
+**(2) The cutoff scale s_c shows a sharp acceleration at p ~ 0.80-0.85.**
+Through the eye (p in [0.25, 0.80]), s_c roughly doubles per p-window.
+Between p=0.80 and p=0.85, the per-window growth jumps to ~5x. The
+dynamics changes character there.
+
+| p | s_c | growth factor over prev window |
+|---|------|----|
+| 0.50 | 159 | 1.8x |
+| 0.65 | 399 | 1.9x |
+| 0.80 | 661 | 1.9x |
+| **0.85** | **3,088** | **4.7x** |
+| **0.90** | **11,489** | **3.7x** |
+
+**(3) Max(s) divergence extrapolates to a finite inversion point.**
+Fitting max(s) ~ (p* - p)^(-alpha) to the maximum avalanche size per
+window:
+
+  p*    = 0.968 +/- 0.019
+  alpha = 3.40 +/- 0.32
+  RMS residual = 0.11 in log10(max s)
+
+The dynamics is consistent with a finite-time singularity at
+p* ~ 0.97. Not at p = 1 (full saturation), but at approximately 97%
+substrate cracked.
+
+**Cosmological reading of these three results:**
+
+- p in [0.18, 0.80] is the "eye" - quasi-stationary avalanche
+  statistics, structural shape that matches galaxy clustering at
+  p ~ 0.65, frozen pockets in cosmic-web-like morphology. The
+  observable universe lives here.
+- p in [0.80, 0.97] is "storm building" - avalanche cutoff jumps,
+  occasional very large events become common. If this regime is what
+  we currently observe as cosmic acceleration ("dark energy" era), the
+  model would predict acceleration is not constant but grows toward an
+  inversion event.
+- p ~ 0.97 is the model's predicted inversion event.
+
+**Important caveat: the eye is tau_s-stationary, not gamma-stationary.**
+While the avalanche size distribution shape is stable across the eye,
+the spatial two-point correlation slope gamma(p) varies substantially:
+3.5 at low p, 1.8 at p=0.65, 1.1 at p=0.80. So the eye explains why
+*event statistics* are stable across cosmic history but does NOT
+explain the observed flatness of gamma(z) across redshift. The
+gamma(z) compatibility question is still open. The eye is a structure
+in the data, not a complete fix to the time-evolution problem.
 
 ## What was built
 
