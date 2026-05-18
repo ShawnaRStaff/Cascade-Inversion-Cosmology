@@ -367,6 +367,63 @@ explain the observed flatness of gamma(z) across redshift. The
 gamma(z) compatibility question is still open. The eye is a structure
 in the data, not a complete fix to the time-evolution problem.
 
+### Time-mapping experiment (added 2026-05-18)
+
+A direct test of whether any choice of time mapping makes
+gamma(t_cosmic) approximately flat through the eye. Six candidate
+mappings were tested:
+
+  (A) Linear in p
+  (B) Linear in drops
+  (C) dt ~ 1/<avalanche size>  (slow when active)
+  (D) dt ~ 1/(dp/d_drops)       (slow when p is changing slowly)
+  (E) dt ~ dp/d_drops           (fast when p is changing)
+  (F) dt ~ <avalanche size>     (fast when active)
+
+For each mapping the std of gamma values at snapshots in the eye
+region p in [0.18, 0.80] was identical: 0.72 in gamma units. This is
+the intrinsic range of gamma(p) across the eye snapshots. No time-
+mapping can reduce it; mappings only re-label the time axis.
+
+**Result: no natural time mapping makes gamma flat through the eye.**
+The eye hypothesis as an explanation of the flat-gamma(z) observation
+is therefore not supported. The eye is real in tau_s and in the max(s)
+divergence, but it does not by itself explain the cosmological
+observation.
+
+**What remains compatible:**
+
+The observed gamma(z) range of 1.66 to 1.91 across z = 0 to 3 maps
+in the model to a NARROW p-window: p in [0.60, 0.70] approximately.
+The universe being at this narrow band today is therefore *compatible*
+with the eye-of-the-storm picture: we sit in a small middle slice
+of the substrate's total cascading lifetime, where gamma is in the
+observed range. But the model does not yet *predict* that we should
+be in this particular slice rather than elsewhere in the eye. The
+free-parameter problem persists, just narrowed to "which 0.10 of p
+the universe is at."
+
+### What the eye result actually buys
+
+Notwithstanding the gamma(z) failure, the avalanche analysis adds two
+robust findings to M4:
+
+1. **tau_s ~ 1.3 across the eye.** The avalanche-event distribution
+   is stationary in shape across most of the post-percolation regime.
+   This is a near-universality in the dynamics that emerges from
+   simple cascading rules - reminiscent of the empirical stability of
+   the galaxy two-point correlation slope across cosmic time.
+
+2. **Predicted inversion event at p* = 0.968 +/- 0.019.** Fitting
+   max(s) ~ (p* - p)^(-3.40 +/- 0.32) to the late-regime data gives a
+   finite-time singularity at p* ~ 0.97. Independent of any time-
+   mapping question. This is a measurable, falsifiable prediction
+   from the dynamics itself. The model has a built-in end-state and a
+   specific predicted occupation level for it.
+
+These two findings are not retracted. They survive the time-mapping
+test. They are independent of the gamma(z) flatness question.
+
 ## What was built
 
 - `src/void_cascade/correlation.py` — FFT-based two-point correlation
