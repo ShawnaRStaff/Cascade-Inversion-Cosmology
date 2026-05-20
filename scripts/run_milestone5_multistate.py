@@ -76,6 +76,9 @@ def run_variant(sigma_max: int | None, seed: int) -> dict:
                 float(state.sigma[ever_toppled].mean())
                 if ever_toppled.any() else 0.0
             )
+            window_sizes = sizes[max(0, t_drop - SNAPSHOT_EVERY):t_drop]
+            mean_size_w = float(window_sizes.mean())
+            max_size_w = int(window_sizes.max())
             snapshots.append({
                 "drop": t_drop,
                 "p": p,
@@ -85,9 +88,20 @@ def run_variant(sigma_max: int | None, seed: int) -> dict:
                 "mean_sigma_in_cracked": mean_sigma_in_cracked,
                 "grains_lost": state.grains_lost,
                 "z_sum": int(state.z.sum()),
-                "mean_size_window": float(sizes[max(0, t_drop - SNAPSHOT_EVERY):t_drop].mean()),
-                "max_size_window": int(sizes[max(0, t_drop - SNAPSHOT_EVERY):t_drop].max()),
+                "mean_size_window": mean_size_w,
+                "max_size_window": max_size_w,
             })
+
+            # Progress print: every snapshot, one line summary
+            elapsed = time.time() - t0
+            rate = t_drop / max(elapsed, 1e-9)
+            eta_done = (N_DROPS_MAX - t_drop) / max(rate, 1e-9)
+            print(f"    [seed={seed}, {label}] drop={t_drop:>7d} "
+                  f"p={p:.4f} max_sigma={int(state.sigma.max()):>2d} "
+                  f"<sigma>_cracked={mean_sigma_in_cracked:.2f} "
+                  f"<s>_win={mean_size_w:.1f} "
+                  f"rate={rate:.0f}/s elapsed={elapsed:.0f}s "
+                  f"eta_to_cap={eta_done:.0f}s", flush=True)
 
             # Halt early if dynamics has arrested (p stops growing meaningfully)
             if len(snapshots) >= 6:
