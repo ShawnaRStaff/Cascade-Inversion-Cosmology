@@ -26,7 +26,9 @@ SAFETY_HOURS="@SAFETY_HOURS@"
 # Update + install minimal deps
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y python3-venv python3-pip git rsync awscli
+# Ubuntu 24.04 dropped awscli from main repos; we don't need it on
+# the instance anyway (rsync handles result sync from the local side).
+apt-get install -y python3-venv python3-pip git rsync
 
 # Safety: shut down the instance after SAFETY_HOURS, no matter what.
 # This is the hard cost cap. If the sweep hangs, the bill stops here.
