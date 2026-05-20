@@ -4,3 +4,15 @@ __pycache__/
 .pytest_cache/
 .claude/
 .DS_Store
+._*
+
+# Credentials — NEVER commit
+*.pem
+*.key
+*_accessKeys.csv
+*credentials*.csv
+*credentials*.json
+.aws/
+aws_config.local
+.env
+.env.*
