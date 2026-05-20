@@ -68,6 +68,18 @@ while IFS='|' read -r INSTANCE_ID DNS L SEED LAUNCHED; do
     "ubuntu@${DNS}:/home/ubuntu/logs/" \
     "data/aws_logs/L${L}_s${SEED}/" 2>/dev/null || true
 
+  # Auto-terminate this instance if its job is done AND the final.npz
+  # is on local disk (so we don't lose data if the sync had a race).
+  # This catches cases where the bootstrap's completion-detection
+  # failed but the job actually finished (defensive against future
+  # bugs and the historical bug we hit).
+  FINAL_NPZ=$(find data/outputs -name "L${L}_s${SEED}_final.npz" 2>/dev/null | head -1)
+  if [ -n "${FINAL_NPZ}" ] && [ -f "${FINAL_NPZ}" ]; then
+    echo "  -> final.npz present locally; terminating idle instance"
+    aws ec2 terminate-instances --region "${AWS_REGION:-us-west-2}" --instance-ids "${INSTANCE_ID}" --output text >/dev/null 2>&1 || true
+    continue
+  fi
+
   echo "synced"
 done < .aws_fleet_state
 

@@ -51,16 +51,26 @@ mkdir -p /home/ubuntu/logs
 
 echo "starting" > /home/ubuntu/SWEEP_STATUS
 
-# Run the sweep in the background. Output goes to /home/ubuntu/logs/.
-nohup .venv/bin/python -u scripts/run_milestone6_fss_sweep.py \
-    ${SWEEP_FLAGS} \
+# Write a sequential runner script: run sweep, then mark done, then
+# schedule self-termination. Putting these in one chain (vs. trying
+# to 'wait' on a sibling process from a backgrounded subshell, which
+# silently fails because wait only works for direct children) is the
+# only reliable way to do completion-detection here.
+cat > /home/ubuntu/sweep_runner.sh <<RUNNER_EOF
+#!/bin/bash
+cd /home/ubuntu/repo
+.venv/bin/python -u scripts/run_milestone6_fss_sweep.py ${SWEEP_FLAGS} \
     >/home/ubuntu/logs/sweep_stdout.log \
-    2>/home/ubuntu/logs/sweep_stderr.log &
-SWEEP_PID=\$!
-echo "\${SWEEP_PID}" > /home/ubuntu/SWEEP_PID
+    2>/home/ubuntu/logs/sweep_stderr.log
+echo "done" > /home/ubuntu/SWEEP_STATUS
+# Give 5 min for any final sync, then power off. The instance has
+# --instance-initiated-shutdown-behavior=terminate so this terminates.
+sudo shutdown -P +5
+RUNNER_EOF
+chmod +x /home/ubuntu/sweep_runner.sh
 
-# Wait for sweep, then mark done.
-( wait \${SWEEP_PID}; echo "done" > /home/ubuntu/SWEEP_STATUS ) &
+nohup /home/ubuntu/sweep_runner.sh > /home/ubuntu/logs/runner.log 2>&1 &
+echo \$! > /home/ubuntu/SWEEP_PID
 UBUNTU_EOF
 
 echo "bootstrap.sh finished"
