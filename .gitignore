@@ -16,3 +16,7 @@ __pycache__/
 aws_config.local
 .env
 .env.*
+
+# Ephemeral AWS state (instance IDs, DNS — not secrets, but not for git)
+.aws_state
+.aws_state.last_*
