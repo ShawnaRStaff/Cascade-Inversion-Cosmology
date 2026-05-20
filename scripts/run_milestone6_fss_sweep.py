@@ -273,8 +273,63 @@ def build_job_list(
     return jobs
 
 
+def run_single_job_mode(spec: str, sweep_dir: Path) -> None:
+    """Run exactly one (L, seed) job. Used by the fleet model where each
+    EC2 instance handles a single job.
+
+    spec format: "L:seed" or "L:seed:n_drops". If n_drops omitted, uses
+    DEFAULT_DROPS_FOR_L[L].
+    """
+    parts = spec.split(":")
+    if len(parts) not in (2, 3):
+        print(f"ERROR: --single-job spec must be 'L:seed' or 'L:seed:n_drops', got '{spec}'")
+        sys.exit(1)
+    L = int(parts[0])
+    seed = int(parts[1])
+    if len(parts) == 3:
+        n_drops = int(parts[2])
+    else:
+        if L not in DEFAULT_DROPS_FOR_L:
+            print(f"ERROR: L={L} has no default n_drops; pass it explicitly as 'L:seed:n_drops'")
+            sys.exit(1)
+        n_drops = DEFAULT_DROPS_FOR_L[L]
+
+    sweep_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Single-job mode: L={L}, seed={seed}, n_drops={n_drops}")
+    print(f"  output dir: {sweep_dir}")
+
+    result = run_one(
+        L=L,
+        seed=seed,
+        n_drops_max=n_drops,
+        ckpt_path=sweep_dir / f"L{L}_s{seed}_ckpt.npz",
+        out_path=sweep_dir / f"L{L}_s{seed}_final.npz",
+        log_path=sweep_dir / f"L{L}_s{seed}.log",
+    )
+
+    # Write a single-job summary alongside the result.
+    summary = {
+        "single_job": True,
+        "result": asdict(result),
+    }
+    with open(sweep_dir / f"L{L}_s{seed}_summary.json", "w") as f:
+        json.dump(summary, f, indent=2)
+    print(
+        f"DONE L={L} seed={seed}: peak={result.peak_size} "
+        f"({result.peak_pct:.2f}%) wall={result.wall_seconds:.0f}s"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--single-job",
+        type=str,
+        default=None,
+        help="Run exactly one (L, seed) job in this process. "
+             "Format: 'L:seed' or 'L:seed:n_drops'. Mutually exclusive with "
+             "--l-list. Used by the fleet model.",
+    )
     parser.add_argument(
         "--workers",
         type=int,
@@ -300,6 +355,16 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    if args.sweep_dir is None:
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        sweep_dir = REPO_ROOT / "data" / "outputs" / f"fss_sweep_{stamp}"
+    else:
+        sweep_dir = Path(args.sweep_dir)
+
+    if args.single_job is not None:
+        run_single_job_mode(args.single_job, sweep_dir)
+        return
+
     l_list = [int(x) for x in args.l_list.split(",")]
     for L in l_list:
         if L not in DEFAULT_SEEDS_PER_L or L not in DEFAULT_DROPS_FOR_L:
@@ -309,13 +374,7 @@ def main() -> None:
             )
             sys.exit(1)
 
-    if args.sweep_dir is None:
-        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        sweep_dir = REPO_ROOT / "data" / "outputs" / f"fss_sweep_{stamp}"
-    else:
-        sweep_dir = Path(args.sweep_dir)
     sweep_dir.mkdir(parents=True, exist_ok=True)
-
     jobs = build_job_list(l_list, DEFAULT_SEEDS_PER_L, DEFAULT_DROPS_FOR_L, sweep_dir)
 
     print(f"FSS sweep plan ({len(jobs)} jobs, {args.workers} workers)")

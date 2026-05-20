@@ -20,3 +20,5 @@ aws_config.local
 # Ephemeral AWS state (instance IDs, DNS — not secrets, but not for git)
 .aws_state
 .aws_state.last_*
+.aws_fleet_state
+.aws_fleet_state.last_*
