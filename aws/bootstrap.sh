@@ -35,6 +35,10 @@ apt-get install -y python3-venv python3-pip git rsync
 shutdown -P +$(( SAFETY_HOURS * 60 )) &
 
 # Clone, set up, run.
+# Note: heredoc uses ${VAR} for outer-shell substitution (BRANCH,
+# REPO_URL, SWEEP_FLAGS were sed'd in above and are normal shell
+# variables). Variables we want the INNER shell (sudo -u ubuntu bash)
+# to evaluate at runtime must use \${VAR} to escape outer expansion.
 sudo -u ubuntu bash <<UBUNTU_EOF
 set -euxo pipefail
 cd /home/ubuntu
@@ -53,7 +57,7 @@ nohup .venv/bin/python -u scripts/run_milestone6_fss_sweep.py \
     >/home/ubuntu/logs/sweep_stdout.log \
     2>/home/ubuntu/logs/sweep_stderr.log &
 SWEEP_PID=\$!
-echo "${SWEEP_PID}" > /home/ubuntu/SWEEP_PID
+echo "\${SWEEP_PID}" > /home/ubuntu/SWEEP_PID
 
 # Wait for sweep, then mark done.
 ( wait \${SWEEP_PID}; echo "done" > /home/ubuntu/SWEEP_STATUS ) &
