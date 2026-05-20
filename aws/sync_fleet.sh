@@ -34,7 +34,10 @@ while IFS='|' read -r INSTANCE_ID DNS L SEED LAUNCHED; do
     continue
   fi
 
-  STATUS=$(ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -i "${KEY}" "ubuntu@${DNS}" \
+  # ssh -n redirects stdin from /dev/null. Without it, ssh consumes the
+  # while-loop's stdin (the fleet state file) and the loop exits after
+  # the first successful ssh.
+  STATUS=$(ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -i "${KEY}" "ubuntu@${DNS}" \
     'cat /home/ubuntu/SWEEP_STATUS 2>/dev/null || echo unknown' 2>/dev/null \
     || echo "unreachable")
 
