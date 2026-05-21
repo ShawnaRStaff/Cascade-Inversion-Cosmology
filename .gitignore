@@ -22,3 +22,4 @@ aws_config.local
 .aws_state.last_*
 .aws_fleet_state
 .aws_fleet_state.last_*
+.aws_fleet_sweep_dir

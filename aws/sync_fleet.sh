@@ -69,11 +69,18 @@ while IFS='|' read -r INSTANCE_ID DNS L SEED LAUNCHED; do
     "data/aws_logs/L${L}_s${SEED}/" 2>/dev/null || true
 
   # Auto-terminate this instance if its job is done AND the final.npz
-  # is on local disk (so we don't lose data if the sync had a race).
-  # This catches cases where the bootstrap's completion-detection
-  # failed but the job actually finished (defensive against future
-  # bugs and the historical bug we hit).
-  FINAL_NPZ=$(find data/outputs -name "L${L}_s${SEED}_final.npz" 2>/dev/null | head -1)
+  # is on local disk for THIS fleet's sweep dir specifically (not just
+  # anywhere — that would let an old fleet's matching filename
+  # incorrectly trigger termination of a new fleet instance).
+  #
+  # The current fleet's sweep subdir is recorded in .aws_fleet_sweep_dir
+  # at launch time. If absent (old fleets), fall back to a global find.
+  if [ -f .aws_fleet_sweep_dir ]; then
+    SWEEP_SUBDIR=$(cat .aws_fleet_sweep_dir)
+    FINAL_NPZ="data/outputs/${SWEEP_SUBDIR}/L${L}_s${SEED}_final.npz"
+  else
+    FINAL_NPZ=$(find data/outputs -name "L${L}_s${SEED}_final.npz" 2>/dev/null | head -1)
+  fi
   if [ -n "${FINAL_NPZ}" ] && [ -f "${FINAL_NPZ}" ]; then
     echo "  -> final.npz present locally; terminating idle instance"
     aws ec2 terminate-instances --region "${AWS_REGION:-us-west-2}" --instance-ids "${INSTANCE_ID}" --output text >/dev/null 2>&1 || true

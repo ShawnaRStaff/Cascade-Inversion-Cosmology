@@ -99,6 +99,11 @@ SWEEP_SUBDIR="fss_sweep_${STAMP}"
 if [ -f .aws_fleet_state ]; then
   mv .aws_fleet_state ".aws_fleet_state.last_$(date -u +%Y%m%d_%H%M%S)"
 fi
+# Record the sweep subdir so sync_fleet.sh can scope its
+# auto-terminate check to THIS fleet's output (preventing an old
+# fleet's final.npz from incorrectly terminating a new fleet's
+# instances when they share filenames).
+echo "${SWEEP_SUBDIR}" > .aws_fleet_sweep_dir
 
 echo "Launching ${#JOBS[@]} instances..."
 LAUNCH_FAILED=0
