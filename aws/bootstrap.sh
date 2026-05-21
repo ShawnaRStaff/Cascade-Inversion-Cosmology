@@ -63,9 +63,12 @@ cd /home/ubuntu/repo
     >/home/ubuntu/logs/sweep_stdout.log \
     2>/home/ubuntu/logs/sweep_stderr.log
 echo "done" > /home/ubuntu/SWEEP_STATUS
-# Give 5 min for any final sync, then power off. The instance has
-# --instance-initiated-shutdown-behavior=terminate so this terminates.
-sudo shutdown -P +5
+# 60 min grace for sync_fleet.sh to be run from local before the
+# instance terminates. sync_fleet's auto-terminate will kill the
+# instance immediately once it pulls the final.npz, so the grace
+# only matters if sync hasn't been run yet. Tuned for a workflow
+# where the human syncs every 15-30 min.
+sudo shutdown -P +60
 RUNNER_EOF
 chmod +x /home/ubuntu/sweep_runner.sh
 
