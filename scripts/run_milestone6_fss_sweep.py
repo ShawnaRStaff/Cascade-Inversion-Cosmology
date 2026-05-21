@@ -88,8 +88,17 @@ class JobResult:
     seed: int
     drops_executed: int
     final_p: float
+    # Toppling-count metric: total topples in biggest avalanche. Can
+    # exceed L^3 when cells re-topple within a single avalanche.
     peak_size: int
     peak_pct: float
+    # Unique-cell metric: count of cells that toppled AT LEAST ONCE
+    # in the biggest avalanche. Bounded by L^3. This is the "fraction
+    # of lattice involved in a single event" measurement — the
+    # physically meaningful "did the cascade span the substrate?"
+    # question.
+    peak_unique_size: int
+    peak_unique_pct: float
     wall_seconds: float
     z_avg_final: float
     grains_lost: int
@@ -130,6 +139,12 @@ def run_one(
         sizes = payload.sizes
         durations = payload.durations
         snapshots = payload.snapshots
+        # unique_sizes added in the M6 redo sweep. Old checkpoints
+        # lack it; allocate fresh in that case.
+        if payload.unique_sizes is not None:
+            unique_sizes = payload.unique_sizes
+        else:
+            unique_sizes = np.zeros(n_drops_max, dtype=np.int64)
         t_drop = payload.drop
     else:
         log.write(
@@ -140,6 +155,7 @@ def run_one(
         ever_toppled = np.zeros((L, L, L), dtype=bool)
         sizes = np.zeros(n_drops_max, dtype=np.int64)
         durations = np.zeros(n_drops_max, dtype=np.int64)
+        unique_sizes = np.zeros(n_drops_max, dtype=np.int64)
         snapshots = []
         t_drop = 0
 
@@ -153,15 +169,23 @@ def run_one(
         s, T, mask = relax(state, rng, track_support=True)
         sizes[t_drop] = s
         durations[t_drop] = T
+        # Per-event unique cells: mask is the bool mask of cells that
+        # toppled at least once during THIS avalanche. mask.sum() is the
+        # number of unique cells in this event. Bounded by L^3. This
+        # is the "fraction of lattice spanned by this event" metric.
         if mask is not None:
+            unique_sizes[t_drop] = int(mask.sum())
             ever_toppled |= mask
         t_drop += 1
 
         if t_drop % SNAPSHOT_EVERY == 0:
             p = float(ever_toppled.mean())
             window_sizes = sizes[max(0, t_drop - SNAPSHOT_EVERY) : t_drop]
+            window_unique = unique_sizes[max(0, t_drop - SNAPSHOT_EVERY) : t_drop]
             mean_size_w = float(window_sizes.mean())
             max_size_w = int(window_sizes.max())
+            mean_unique_w = float(window_unique.mean())
+            max_unique_w = int(window_unique.max())
             z_mean = float(state.z.mean())
             snapshots.append(
                 {
@@ -169,17 +193,21 @@ def run_one(
                     "p": p,
                     "mean_size_window": mean_size_w,
                     "max_size_window": max_size_w,
+                    "mean_unique_window": mean_unique_w,
+                    "max_unique_window": max_unique_w,
                     "z_mean": z_mean,
                     "grains_lost": int(state.grains_lost),
                 }
             )
             elapsed = time.time() - t0
             rate = t_drop / max(elapsed, 1e-9)
+            L3 = L ** 3
             log.write(
                 f"[{datetime.now().isoformat()}] drop={t_drop} "
                 f"p={p:.5f} <s>_win={mean_size_w:.1f} "
-                f"max_s={max_size_w} z={z_mean:.3f} "
-                f"rate={rate:.0f}/s elapsed={elapsed:.0f}s\n"
+                f"max_s={max_size_w} max_unique={max_unique_w} "
+                f"(unique%={100.0 * max_unique_w / L3:.1f}) "
+                f"z={z_mean:.3f} rate={rate:.0f}/s elapsed={elapsed:.0f}s\n"
             )
 
         if policy.should_save(t_drop):
@@ -196,6 +224,7 @@ def run_one(
                     durations=durations,
                     ever_toppled=ever_toppled,
                     snapshots=snapshots,
+                    unique_sizes=unique_sizes,
                 ),
             )
             policy.mark_saved(t_drop)
@@ -213,6 +242,7 @@ def run_one(
         n_drops_max=np.int64(n_drops_max),
         sizes=sizes,
         durations=durations,
+        unique_sizes=unique_sizes,
         ever_toppled=ever_toppled,
         final_z=state.z,
         final_p=np.float64(float(ever_toppled.mean())),
@@ -220,20 +250,27 @@ def run_one(
         snapshots=np.array(snapshots, dtype=object),
     )
 
+    L3 = L ** 3
+    peak_size = int(sizes[:t_drop].max())
+    peak_unique_size = int(unique_sizes[:t_drop].max())
     result = JobResult(
         L=L,
         seed=seed,
         drops_executed=t_drop,
         final_p=float(ever_toppled.mean()),
-        peak_size=int(sizes[:t_drop].max()),
-        peak_pct=float(sizes[:t_drop].max()) / (L**3) * 100.0,
+        peak_size=peak_size,
+        peak_pct=float(peak_size) / L3 * 100.0,
+        peak_unique_size=peak_unique_size,
+        peak_unique_pct=float(peak_unique_size) / L3 * 100.0,
         wall_seconds=wall,
         z_avg_final=float(state.z.mean()),
         grains_lost=int(state.grains_lost),
     )
     log.write(
         f"[{datetime.now().isoformat()}] DONE wall={wall:.0f}s "
-        f"peak={result.peak_size} ({result.peak_pct:.2f}%) "
+        f"peak_topples={result.peak_size} ({result.peak_pct:.2f}%) "
+        f"peak_unique={result.peak_unique_size} "
+        f"({result.peak_unique_pct:.2f}% of L^3) "
         f"final_p={result.final_p:.5f}\n"
     )
     log.close()
@@ -315,8 +352,11 @@ def run_single_job_mode(spec: str, sweep_dir: Path) -> None:
     with open(sweep_dir / f"L{L}_s{seed}_summary.json", "w") as f:
         json.dump(summary, f, indent=2)
     print(
-        f"DONE L={L} seed={seed}: peak={result.peak_size} "
-        f"({result.peak_pct:.2f}%) wall={result.wall_seconds:.0f}s"
+        f"DONE L={L} seed={seed}: "
+        f"peak_unique={result.peak_unique_size} "
+        f"({result.peak_unique_pct:.2f}% of L^3) "
+        f"peak_topples={result.peak_size} ({result.peak_pct:.2f}%) "
+        f"wall={result.wall_seconds:.0f}s"
     )
 
 
@@ -408,10 +448,14 @@ def main() -> None:
         json.dump(summary, f, indent=2)
     print(f"Summary written to {sweep_dir / 'summary.json'}")
 
-    print(f"\n{'L':>5}  {'seed':>6}  {'peak%':>7}  {'final_p':>9}  {'wall':>7}")
+    print(
+        f"\n{'L':>5}  {'seed':>6}  {'unique%':>8}  {'topple%':>8}  "
+        f"{'final_p':>9}  {'wall':>7}"
+    )
     for r in results:
         print(
-            f"{r.L:>5}  {r.seed:>6}  {r.peak_pct:>6.2f}%  "
+            f"{r.L:>5}  {r.seed:>6}  {r.peak_unique_pct:>7.2f}%  "
+            f"{r.peak_pct:>7.2f}%  "
             f"{r.final_p:>9.5f}  {r.wall_seconds:>6.0f}s"
         )
 

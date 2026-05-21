@@ -67,12 +67,26 @@ def test_run_one_completes_small_L(tmp_path: Path) -> None:
     assert result.drops_executed == 2000
     assert 0.0 <= result.final_p <= 1.0
     assert result.peak_size >= 1
+    # Unique-cells metric: must be at least 1 and at most L^3
+    assert result.peak_unique_size >= 1
+    assert result.peak_unique_size <= 8**3
+    assert 0.0 <= result.peak_unique_pct <= 100.0
+    # Each event's unique-cells count is always <= total topplings
+    # (since unique cells <= total topples; re-toppling adds to topples
+    # but not uniques).
+    assert result.peak_unique_size <= result.peak_size
 
     # Verify the output file is readable and has the expected fields.
     data = np.load(out, allow_pickle=True)
     assert int(data["L"]) == 8
     assert int(data["seed"]) == 42
     assert data["sizes"].shape == (2000,)
+    assert data["unique_sizes"].shape == (2000,), (
+        "unique_sizes must be saved in the final npz"
+    )
+    # Invariant: unique <= total topples per event, and unique <= L^3
+    assert (data["unique_sizes"] <= data["sizes"]).all()
+    assert (data["unique_sizes"] <= 8**3).all()
     assert data["ever_toppled"].shape == (8, 8, 8)
 
 

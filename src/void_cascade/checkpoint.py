@@ -49,10 +49,15 @@ class CheckpointPayload:
     drop: int  # next drop index to execute
     state: MannaState3D
     rng_state: dict  # rng.bit_generator.state at time of save
-    sizes: np.ndarray  # full-length, zeros after drop
+    sizes: np.ndarray  # per-event toppling count; full-length, zeros after drop
     durations: np.ndarray  # full-length, zeros after drop
     ever_toppled: np.ndarray
     snapshots: list[dict]
+    # Per-event UNIQUE cells toppled at least once during that avalanche.
+    # Distinct from sizes (which counts every topple, including re-topples).
+    # unique_sizes[t] <= L^3 always; unique_sizes[t] / L^3 is the
+    # "fraction of lattice involved in event t" metric.
+    unique_sizes: np.ndarray = None  # type: ignore
 
 
 def save_checkpoint(
@@ -69,6 +74,13 @@ def save_checkpoint(
     tmp = path.with_suffix(path.suffix + ".tmp")
     # snapshots is a list[dict], save as object array. rng_state is a
     # nested dict; same treatment.
+    # unique_sizes may be None for backward-compatible old checkpoints.
+    # Save a sentinel zero-length array in that case.
+    unique_sizes = (
+        payload.unique_sizes
+        if payload.unique_sizes is not None
+        else np.zeros(0, dtype=np.int64)
+    )
     np.savez_compressed(
         tmp,
         L=np.int64(payload.L),
@@ -82,6 +94,7 @@ def save_checkpoint(
         durations=payload.durations,
         ever_toppled=payload.ever_toppled,
         snapshots=np.array(payload.snapshots, dtype=object),
+        unique_sizes=unique_sizes,
     )
     # np.savez adds .npz to tmp; account for that.
     tmp_with_ext = tmp.with_suffix(tmp.suffix + ".npz") if tmp.suffix != ".npz" else tmp
@@ -108,6 +121,12 @@ def load_checkpoint(path: str | Path) -> CheckpointPayload | None:
             z=data["z"].astype(np.int64),
             grains_lost=int(data["grains_lost"]),
         )
+        # unique_sizes optional for backward compat with old checkpoints.
+        unique_sizes = (
+            data["unique_sizes"] if "unique_sizes" in data.files else None
+        )
+        if unique_sizes is not None and unique_sizes.size == 0:
+            unique_sizes = None
         return CheckpointPayload(
             L=int(data["L"]),
             seed=int(data["seed"]),
@@ -119,6 +138,7 @@ def load_checkpoint(path: str | Path) -> CheckpointPayload | None:
             durations=data["durations"],
             ever_toppled=data["ever_toppled"],
             snapshots=snapshots,
+            unique_sizes=unique_sizes,
         )
     except KeyError as e:
         raise ValueError(f"Malformed checkpoint at {path}: missing {e}") from e
