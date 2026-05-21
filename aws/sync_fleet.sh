@@ -43,30 +43,47 @@ while IFS='|' read -r INSTANCE_ID DNS L SEED LAUNCHED; do
 
   printf "  [L=%-4d s=%d] %s status=%s ... " "${L}" "${SEED}" "${INSTANCE_ID}" "${STATUS}"
 
+  # CRITICAL: always attempt rsync, even if the status check failed.
+  # SSH can transiently fail (network blip, AWS API throttling) and we
+  # MUST not skip data sync on those. rsync uses its own SSH connection
+  # and may succeed even when the status query failed. This is the bug
+  # that lost the L=96 NEW-metric data overnight: status check returned
+  # "unreachable" intermittently during the 3-hour grace window, sync
+  # was skipped for that cycle, and by the time grace expired no sync
+  # had successfully pulled the data.
+  #
+  # We track unreachable only for reporting; we don't gate rsync on it.
   if [ "${STATUS}" = "unreachable" ]; then
-    echo "(unreachable, may have terminated)"
     UNREACHABLE_COUNT=$((UNREACHABLE_COUNT + 1))
-    continue
-  fi
-
-  if [ "${STATUS}" = "done" ]; then
+  elif [ "${STATUS}" = "done" ]; then
     DONE_COUNT=$((DONE_COUNT + 1))
   else
     RUNNING_COUNT=$((RUNNING_COUNT + 1))
   fi
 
-  # Pull whatever's there. Single-job mode writes into the
-  # data/outputs/fss_sweep_*/ subdir.
-  rsync -az --quiet \
-    -e "ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -i ${KEY}" \
+  # ALWAYS try rsync. Data preservation takes priority over status
+  # accounting. ConnectTimeout=20 a bit longer than status check.
+  RSYNC_OK=0
+  if rsync -az --quiet --timeout=60 \
+    -e "ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -i ${KEY}" \
     "ubuntu@${DNS}:/home/ubuntu/repo/data/outputs/fss_sweep_*" \
-    data/outputs/ 2>/dev/null || true
+    data/outputs/ 2>/dev/null; then
+    RSYNC_OK=1
+  fi
 
   # Also pull job log into aws_logs.
-  rsync -az --quiet \
-    -e "ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -i ${KEY}" \
+  rsync -az --quiet --timeout=30 \
+    -e "ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -i ${KEY}" \
     "ubuntu@${DNS}:/home/ubuntu/logs/" \
     "data/aws_logs/L${L}_s${SEED}/" 2>/dev/null || true
+
+  # If rsync failed AND status was unreachable, the instance is truly
+  # unreachable. If rsync succeeded, the instance was reachable enough
+  # to pull data even though status check may have flapped.
+  if [ "${STATUS}" = "unreachable" ] && [ "${RSYNC_OK}" -eq 0 ]; then
+    echo "(unreachable, rsync also failed)"
+    continue
+  fi
 
   # Auto-terminate this instance if its job is done AND the final.npz
   # is on local disk for THIS fleet's sweep dir specifically (not just
