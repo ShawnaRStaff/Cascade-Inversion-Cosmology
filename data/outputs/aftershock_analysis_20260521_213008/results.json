@@ -1,0 +1,257 @@
+[
+  {
+    "L": 48,
+    "seed": 14800,
+    "sat_start_drop": 75000,
+    "sat_window_length": 175000,
+    "n_large_events": 1075,
+    "excess_acf_lag1_to_20": 0.00025097542252724704,
+    "inter_event_fit": {
+      "n": 1074,
+      "exp_tau": 162.77932960893855,
+      "pow_alpha": 1.219010926834681,
+      "log_l_exp": -6543.232742838499,
+      "log_l_pow": -7608.877461260923,
+      "delta_log_l": -1065.6447184224244,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 48,
+    "seed": 14801,
+    "sat_start_drop": 75000,
+    "sat_window_length": 175000,
+    "n_large_events": 1078,
+    "excess_acf_lag1_to_20": -0.0009667942423548144,
+    "inter_event_fit": {
+      "n": 1077,
+      "exp_tau": 162.32033426183844,
+      "pow_alpha": 1.2207376103636411,
+      "log_l_exp": -6558.468779911429,
+      "log_l_pow": -7583.206707130995,
+      "delta_log_l": -1024.7379272195658,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 48,
+    "seed": 14802,
+    "sat_start_drop": 75000,
+    "sat_window_length": 175000,
+    "n_large_events": 1075,
+    "excess_acf_lag1_to_20": -0.0007561917340808772,
+    "inter_event_fit": {
+      "n": 1074,
+      "exp_tau": 162.6927374301676,
+      "pow_alpha": 1.2199822566072782,
+      "log_l_exp": -6542.661265211922,
+      "log_l_pow": -7582.471749281243,
+      "delta_log_l": -1039.8104840693213,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 48,
+    "seed": 14803,
+    "sat_start_drop": 75000,
+    "sat_window_length": 175000,
+    "n_large_events": 1079,
+    "excess_acf_lag1_to_20": -0.0004267602810638365,
+    "inter_event_fit": {
+      "n": 1078,
+      "exp_tau": 162.24025974025975,
+      "pow_alpha": 1.2204972365476205,
+      "log_l_exp": -6564.02643043112,
+      "log_l_pow": -7596.746146408797,
+      "delta_log_l": -1032.719715977677,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 48,
+    "seed": 14804,
+    "sat_start_drop": 75000,
+    "sat_window_length": 175000,
+    "n_large_events": 1076,
+    "excess_acf_lag1_to_20": -0.0010402298763556239,
+    "inter_event_fit": {
+      "n": 1075,
+      "exp_tau": 162.20372093023255,
+      "pow_alpha": 1.2187946840721255,
+      "log_l_exp": -6545.517062937004,
+      "log_l_pow": -7621.875195342203,
+      "delta_log_l": -1076.3581324051993,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 64,
+    "seed": 16400,
+    "sat_start_drop": 175000,
+    "sat_window_length": 425000,
+    "n_large_events": 2619,
+    "excess_acf_lag1_to_20": -0.000576322138978498,
+    "inter_event_fit": {
+      "n": 2618,
+      "exp_tau": 162.29067990832698,
+      "pow_alpha": 1.2195564961069554,
+      "log_l_exp": -15942.020527099392,
+      "log_l_pow": -18511.307414820167,
+      "delta_log_l": -2569.2868877207748,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 64,
+    "seed": 16401,
+    "sat_start_drop": 175000,
+    "sat_window_length": 425000,
+    "n_large_events": 2612,
+    "excess_acf_lag1_to_20": -0.0002479949479861061,
+    "inter_event_fit": {
+      "n": 2611,
+      "exp_tau": 162.66487935656838,
+      "pow_alpha": 1.2198124569355462,
+      "log_l_exp": -15905.408150287934,
+      "log_l_pow": -18444.92195536444,
+      "delta_log_l": -2539.5138050765054,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 64,
+    "seed": 16402,
+    "sat_start_drop": 175000,
+    "sat_window_length": 425000,
+    "n_large_events": 2614,
+    "excess_acf_lag1_to_20": -0.0005480769177280958,
+    "inter_event_fit": {
+      "n": 2613,
+      "exp_tau": 162.58323765786452,
+      "pow_alpha": 1.2191565007926934,
+      "log_l_exp": -15916.279737478704,
+      "log_l_pow": -18502.4399890248,
+      "delta_log_l": -2586.1602515460945,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 64,
+    "seed": 16403,
+    "sat_start_drop": 175000,
+    "sat_window_length": 425000,
+    "n_large_events": 2615,
+    "excess_acf_lag1_to_20": -0.0005348111133762259,
+    "inter_event_fit": {
+      "n": 2614,
+      "exp_tau": 162.53557765876053,
+      "pow_alpha": 1.2193775654177237,
+      "log_l_exp": -15921.604541677325,
+      "log_l_pow": -18494.86620241228,
+      "delta_log_l": -2573.2616607349537,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 64,
+    "seed": 16404,
+    "sat_start_drop": 175000,
+    "sat_window_length": 425000,
+    "n_large_events": 2621,
+    "excess_acf_lag1_to_20": -0.0005778869855460302,
+    "inter_event_fit": {
+      "n": 2620,
+      "exp_tau": 162.0358778625954,
+      "pow_alpha": 1.219183436990464,
+      "log_l_exp": -15950.082580978766,
+      "log_l_pow": -18550.215236250868,
+      "delta_log_l": -2600.132655272102,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 96,
+    "seed": 19600,
+    "sat_start_drop": 565000,
+    "sat_window_length": 935000,
+    "n_large_events": 5777,
+    "excess_acf_lag1_to_20": -0.00041314020622329115,
+    "inter_event_fit": {
+      "n": 5776,
+      "exp_tau": 161.80903739612188,
+      "pow_alpha": 1.2205707094840426,
+      "log_l_exp": -35155.143774219934,
+      "log_l_pow": -40693.25133560261,
+      "delta_log_l": -5538.107561382676,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 96,
+    "seed": 19601,
+    "sat_start_drop": 565000,
+    "sat_window_length": 935000,
+    "n_large_events": 5775,
+    "excess_acf_lag1_to_20": 9.689344821373132e-05,
+    "inter_event_fit": {
+      "n": 5774,
+      "exp_tau": 161.88569449255283,
+      "pow_alpha": 1.2206653228266713,
+      "log_l_exp": -35145.705727569206,
+      "log_l_pow": -40665.460671401685,
+      "delta_log_l": -5519.754943832479,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 96,
+    "seed": 19602,
+    "sat_start_drop": 565000,
+    "sat_window_length": 935000,
+    "n_large_events": 5783,
+    "excess_acf_lag1_to_20": -0.0002471255582928779,
+    "inter_event_fit": {
+      "n": 5782,
+      "exp_tau": 161.6553095814597,
+      "pow_alpha": 1.2202436825608218,
+      "log_l_exp": -35186.16643448657,
+      "log_l_pow": -40783.0250610558,
+      "delta_log_l": -5596.858626569228,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 96,
+    "seed": 19603,
+    "sat_start_drop": 565000,
+    "sat_window_length": 935000,
+    "n_large_events": 5788,
+    "excess_acf_lag1_to_20": -0.00019054810250150638,
+    "inter_event_fit": {
+      "n": 5787,
+      "exp_tau": 161.49369275963366,
+      "pow_alpha": 1.220754173735542,
+      "log_l_exp": -35210.80524998381,
+      "log_l_pow": -40744.13281236987,
+      "delta_log_l": -5533.327562386061,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  },
+  {
+    "L": 96,
+    "seed": 19604,
+    "sat_start_drop": 565000,
+    "sat_window_length": 935000,
+    "n_large_events": 5783,
+    "excess_acf_lag1_to_20": -0.00015010314863154653,
+    "inter_event_fit": {
+      "n": 5782,
+      "exp_tau": 161.63870632998962,
+      "pow_alpha": 1.2209053685858862,
+      "log_l_exp": -35185.57254783628,
+      "log_l_pow": -40687.04423064144,
+      "delta_log_l": -5501.4716828051605,
+      "verdict": "exponential strongly favored (Poisson / independent events)"
+    }
+  }
+]
