@@ -1,0 +1,16 @@
+{
+  "single_job": true,
+  "result": {
+    "L": 128,
+    "seed": 22800,
+    "drops_executed": 4000000,
+    "final_p": 1.0,
+    "peak_size": 2187852,
+    "peak_pct": 104.32491302490234,
+    "peak_unique_size": 854333,
+    "peak_unique_pct": 40.73777198791504,
+    "wall_seconds": 201945.40986394882,
+    "z_avg_final": 0.6192026138305664,
+    "grains_lost": 2701438
+  }
+}

@@ -1,0 +1,135 @@
+[2026-05-21T04:29:28.316918] L=64 seed=16404 starting
+[2026-05-21T04:29:28.316966] starting fresh, n_drops=600000
+[2026-05-21T04:29:29.570220] drop=5000 p=0.00027 <s>_win=0.0 max_s=4 max_unique=3 (unique%=0.0) z=0.019 rate=3990/s elapsed=1s
+[2026-05-21T04:29:30.834208] drop=10000 p=0.00090 <s>_win=0.0 max_s=3 max_unique=3 (unique%=0.0) z=0.038 rate=3973/s elapsed=3s
+[2026-05-21T04:29:32.160050] drop=15000 p=0.00212 <s>_win=0.1 max_s=4 max_unique=4 (unique%=0.0) z=0.057 rate=3903/s elapsed=4s
+[2026-05-21T04:29:33.541812] drop=20000 p=0.00384 <s>_win=0.1 max_s=9 max_unique=7 (unique%=0.0) z=0.076 rate=3828/s elapsed=5s
+[2026-05-21T04:29:34.999287] drop=25000 p=0.00629 <s>_win=0.1 max_s=6 max_unique=6 (unique%=0.0) z=0.095 rate=3741/s elapsed=7s
+[2026-05-21T04:29:36.501703] drop=30000 p=0.00915 <s>_win=0.2 max_s=6 max_unique=6 (unique%=0.0) z=0.114 rate=3665/s elapsed=8s
+[2026-05-21T04:29:38.118881] drop=35000 p=0.01303 <s>_win=0.2 max_s=7 max_unique=7 (unique%=0.0) z=0.133 rate=3571/s elapsed=10s
+[2026-05-21T04:29:39.761600] drop=40000 p=0.01723 <s>_win=0.2 max_s=9 max_unique=9 (unique%=0.0) z=0.152 rate=3495/s elapsed=11s
+[2026-05-21T04:29:41.524936] drop=45000 p=0.02251 <s>_win=0.3 max_s=11 max_unique=9 (unique%=0.0) z=0.171 rate=3407/s elapsed=13s
+[2026-05-21T04:29:43.330433] drop=50000 p=0.02818 <s>_win=0.3 max_s=10 max_unique=8 (unique%=0.0) z=0.190 rate=3330/s elapsed=15s
+[2026-05-21T04:29:43.416487] checkpoint saved at drop=50000
+[2026-05-21T04:29:45.534919] drop=55000 p=0.03472 <s>_win=0.4 max_s=14 max_unique=12 (unique%=0.0) z=0.209 rate=3194/s elapsed=17s
+[2026-05-21T04:29:47.806052] drop=60000 p=0.04265 <s>_win=0.4 max_s=26 max_unique=23 (unique%=0.0) z=0.228 rate=3079/s elapsed=19s
+[2026-05-21T04:29:50.257253] drop=65000 p=0.05205 <s>_win=0.5 max_s=14 max_unique=14 (unique%=0.0) z=0.247 rate=2963/s elapsed=22s
+[2026-05-21T04:29:52.780524] drop=70000 p=0.06217 <s>_win=0.6 max_s=18 max_unique=16 (unique%=0.0) z=0.265 rate=2861/s elapsed=24s
+[2026-05-21T04:29:55.383668] drop=75000 p=0.07288 <s>_win=0.6 max_s=22 max_unique=17 (unique%=0.0) z=0.284 rate=2771/s elapsed=27s
+[2026-05-21T04:29:58.261759] drop=80000 p=0.08614 <s>_win=0.8 max_s=27 max_unique=19 (unique%=0.0) z=0.303 rate=2672/s elapsed=30s
+[2026-05-21T04:30:01.235363] drop=85000 p=0.10043 <s>_win=0.9 max_s=36 max_unique=26 (unique%=0.0) z=0.321 rate=2582/s elapsed=33s
+[2026-05-21T04:30:04.424583] drop=90000 p=0.11626 <s>_win=1.0 max_s=36 max_unique=30 (unique%=0.0) z=0.340 rate=2493/s elapsed=36s
+[2026-05-21T04:30:07.911575] drop=95000 p=0.13433 <s>_win=1.2 max_s=45 max_unique=38 (unique%=0.0) z=0.359 rate=2399/s elapsed=40s
+[2026-05-21T04:30:11.586789] drop=100000 p=0.15409 <s>_win=1.3 max_s=46 max_unique=45 (unique%=0.0) z=0.377 rate=2311/s elapsed=43s
+[2026-05-21T04:30:11.711601] checkpoint saved at drop=100000
+[2026-05-21T04:30:15.783599] drop=105000 p=0.17692 <s>_win=1.6 max_s=71 max_unique=58 (unique%=0.0) z=0.396 rate=2212/s elapsed=47s
+[2026-05-21T04:30:20.195387] drop=110000 p=0.20247 <s>_win=1.8 max_s=63 max_unique=59 (unique%=0.0) z=0.414 rate=2120/s elapsed=52s
+[2026-05-21T04:30:25.068908] drop=115000 p=0.23159 <s>_win=2.2 max_s=64 max_unique=53 (unique%=0.0) z=0.433 rate=2026/s elapsed=57s
+[2026-05-21T04:30:30.452118] drop=120000 p=0.26518 <s>_win=2.7 max_s=198 max_unique=150 (unique%=0.1) z=0.451 rate=1931/s elapsed=62s
+[2026-05-21T04:30:36.123110] drop=125000 p=0.30009 <s>_win=2.9 max_s=119 max_unique=97 (unique%=0.0) z=0.469 rate=1843/s elapsed=68s
+[2026-05-21T04:30:42.506453] drop=130000 p=0.34138 <s>_win=3.6 max_s=179 max_unique=146 (unique%=0.1) z=0.487 rate=1752/s elapsed=74s
+[2026-05-21T04:30:49.566416] drop=135000 p=0.38692 <s>_win=4.4 max_s=230 max_unique=183 (unique%=0.1) z=0.505 rate=1662/s elapsed=81s
+[2026-05-21T04:30:57.390915] drop=140000 p=0.43602 <s>_win=5.3 max_s=271 max_unique=213 (unique%=0.1) z=0.523 rate=1572/s elapsed=89s
+[2026-05-21T04:31:06.522648] drop=145000 p=0.49764 <s>_win=7.6 max_s=638 max_unique=484 (unique%=0.2) z=0.541 rate=1476/s elapsed=98s
+[2026-05-21T04:31:17.234842] drop=150000 p=0.56945 <s>_win=10.5 max_s=1207 max_unique=792 (unique%=0.3) z=0.558 rate=1377/s elapsed=109s
+[2026-05-21T04:31:17.392444] checkpoint saved at drop=150000
+[2026-05-21T04:31:30.230932] drop=155000 p=0.65295 <s>_win=15.9 max_s=1862 max_unique=1157 (unique%=0.4) z=0.575 rate=1271/s elapsed=122s
+[2026-05-21T04:31:47.162090] drop=160000 p=0.75778 <s>_win=30.4 max_s=8610 max_unique=5440 (unique%=2.1) z=0.591 rate=1152/s elapsed=139s
+[2026-05-21T04:32:10.942091] drop=165000 p=0.86763 <s>_win=86.3 max_s=28831 max_unique=16983 (unique%=6.5) z=0.606 rate=1015/s elapsed=163s
+[2026-05-21T04:32:44.676283] drop=170000 p=0.94199 <s>_win=215.1 max_s=98188 max_unique=51503 (unique%=19.6) z=0.613 rate=866/s elapsed=196s
+[2026-05-21T04:33:21.076744] drop=175000 p=0.97145 <s>_win=255.1 max_s=142345 max_unique=66239 (unique%=25.3) z=0.615 rate=752/s elapsed=233s
+[2026-05-21T04:33:59.027611] drop=180000 p=0.98304 <s>_win=277.2 max_s=123395 max_unique=63392 (unique%=24.2) z=0.615 rate=665/s elapsed=271s
+[2026-05-21T04:34:37.652711] drop=185000 p=0.98877 <s>_win=262.4 max_s=63955 max_unique=37087 (unique%=14.1) z=0.617 rate=598/s elapsed=309s
+[2026-05-21T04:35:16.770177] drop=190000 p=0.99279 <s>_win=284.3 max_s=69367 max_unique=39759 (unique%=15.2) z=0.616 rate=545/s elapsed=348s
+[2026-05-21T04:35:55.667472] drop=195000 p=0.99470 <s>_win=290.9 max_s=77377 max_unique=41402 (unique%=15.8) z=0.615 rate=503/s elapsed=387s
+[2026-05-21T04:36:32.080227] drop=200000 p=0.99613 <s>_win=240.2 max_s=69793 max_unique=41729 (unique%=15.9) z=0.616 rate=472/s elapsed=424s
+[2026-05-21T04:36:32.247666] checkpoint saved at drop=200000
+[2026-05-21T04:37:09.928505] drop=205000 p=0.99697 <s>_win=264.6 max_s=118016 max_unique=62145 (unique%=23.7) z=0.616 rate=444/s elapsed=462s
+[2026-05-21T04:37:47.078757] drop=210000 p=0.99765 <s>_win=265.6 max_s=127634 max_unique=65947 (unique%=25.2) z=0.616 rate=421/s elapsed=499s
+[2026-05-21T04:38:27.507690] drop=215000 p=0.99812 <s>_win=280.7 max_s=88101 max_unique=48101 (unique%=18.3) z=0.616 rate=399/s elapsed=539s
+[2026-05-21T04:39:05.211142] drop=220000 p=0.99850 <s>_win=266.8 max_s=90853 max_unique=48149 (unique%=18.4) z=0.616 rate=381/s elapsed=577s
+[2026-05-21T04:39:42.094685] drop=225000 p=0.99881 <s>_win=262.5 max_s=132346 max_unique=71282 (unique%=27.2) z=0.616 rate=367/s elapsed=614s
+[2026-05-21T04:40:19.273849] drop=230000 p=0.99902 <s>_win=252.7 max_s=87608 max_unique=47112 (unique%=18.0) z=0.617 rate=353/s elapsed=651s
+[2026-05-21T04:40:59.028285] drop=235000 p=0.99926 <s>_win=283.4 max_s=69492 max_unique=42113 (unique%=16.1) z=0.616 rate=340/s elapsed=691s
+[2026-05-21T04:41:35.011309] drop=240000 p=0.99939 <s>_win=249.6 max_s=78474 max_unique=44683 (unique%=17.0) z=0.617 rate=330/s elapsed=727s
+[2026-05-21T04:42:11.514811] drop=245000 p=0.99951 <s>_win=253.4 max_s=129260 max_unique=63866 (unique%=24.4) z=0.616 rate=321/s elapsed=763s
+[2026-05-21T04:42:50.756199] drop=250000 p=0.99957 <s>_win=276.3 max_s=73324 max_unique=40245 (unique%=15.4) z=0.616 rate=312/s elapsed=802s
+[2026-05-21T04:42:50.956573] checkpoint saved at drop=250000
+[2026-05-21T04:43:28.034112] drop=255000 p=0.99963 <s>_win=277.5 max_s=144558 max_unique=77581 (unique%=29.6) z=0.616 rate=304/s elapsed=840s
+[2026-05-21T04:44:05.899194] drop=260000 p=0.99966 <s>_win=264.2 max_s=66585 max_unique=37891 (unique%=14.5) z=0.617 rate=296/s elapsed=878s
+[2026-05-21T04:44:43.185501] drop=265000 p=0.99973 <s>_win=272.3 max_s=127574 max_unique=63831 (unique%=24.3) z=0.615 rate=290/s elapsed=915s
+[2026-05-21T04:45:21.441052] drop=270000 p=0.99977 <s>_win=268.8 max_s=87638 max_unique=49249 (unique%=18.8) z=0.616 rate=283/s elapsed=953s
+[2026-05-21T04:45:59.534919] drop=275000 p=0.99980 <s>_win=275.4 max_s=119876 max_unique=65668 (unique%=25.1) z=0.616 rate=277/s elapsed=991s
+[2026-05-21T04:46:36.514332] drop=280000 p=0.99983 <s>_win=253.9 max_s=164453 max_unique=81299 (unique%=31.0) z=0.616 rate=272/s elapsed=1028s
+[2026-05-21T04:47:13.109641] drop=285000 p=0.99986 <s>_win=264.9 max_s=86036 max_unique=43844 (unique%=16.7) z=0.617 rate=268/s elapsed=1065s
+[2026-05-21T04:47:50.921838] drop=290000 p=0.99990 <s>_win=271.7 max_s=122615 max_unique=67502 (unique%=25.7) z=0.617 rate=263/s elapsed=1103s
+[2026-05-21T04:48:29.791494] drop=295000 p=0.99991 <s>_win=287.6 max_s=127774 max_unique=66949 (unique%=25.5) z=0.616 rate=258/s elapsed=1141s
+[2026-05-21T04:49:07.343547] drop=300000 p=0.99991 <s>_win=252.3 max_s=114887 max_unique=60201 (unique%=23.0) z=0.617 rate=254/s elapsed=1179s
+[2026-05-21T04:49:07.576342] checkpoint saved at drop=300000
+[2026-05-21T04:49:48.691122] drop=305000 p=0.99992 <s>_win=313.9 max_s=76888 max_unique=41326 (unique%=15.8) z=0.615 rate=250/s elapsed=1220s
+[2026-05-21T04:50:25.087204] drop=310000 p=0.99994 <s>_win=245.4 max_s=102091 max_unique=51614 (unique%=19.7) z=0.616 rate=247/s elapsed=1257s
+[2026-05-21T04:51:03.872914] drop=315000 p=0.99994 <s>_win=270.2 max_s=124555 max_unique=67224 (unique%=25.6) z=0.616 rate=243/s elapsed=1296s
+[2026-05-21T04:51:41.682383] drop=320000 p=0.99995 <s>_win=261.2 max_s=106599 max_unique=58133 (unique%=22.2) z=0.616 rate=240/s elapsed=1333s
+[2026-05-21T04:52:18.940722] drop=325000 p=0.99997 <s>_win=259.9 max_s=147647 max_unique=71917 (unique%=27.4) z=0.617 rate=237/s elapsed=1371s
+[2026-05-21T04:52:58.367463] drop=330000 p=0.99997 <s>_win=285.0 max_s=95186 max_unique=51063 (unique%=19.5) z=0.616 rate=234/s elapsed=1410s
+[2026-05-21T04:53:34.734262] drop=335000 p=0.99998 <s>_win=260.7 max_s=82901 max_unique=45325 (unique%=17.3) z=0.616 rate=232/s elapsed=1446s
+[2026-05-21T04:54:11.098928] drop=340000 p=0.99998 <s>_win=266.6 max_s=115497 max_unique=56605 (unique%=21.6) z=0.616 rate=229/s elapsed=1483s
+[2026-05-21T04:54:49.240590] drop=345000 p=0.99998 <s>_win=268.8 max_s=109412 max_unique=60121 (unique%=22.9) z=0.616 rate=227/s elapsed=1521s
+[2026-05-21T04:55:24.687474] drop=350000 p=0.99999 <s>_win=253.2 max_s=102975 max_unique=55736 (unique%=21.3) z=0.617 rate=225/s elapsed=1556s
+[2026-05-21T04:55:24.953907] checkpoint saved at drop=350000
+[2026-05-21T04:56:02.214565] drop=355000 p=0.99999 <s>_win=273.7 max_s=211651 max_unique=96434 (unique%=36.8) z=0.616 rate=223/s elapsed=1594s
+[2026-05-21T04:56:39.801664] drop=360000 p=0.99999 <s>_win=251.5 max_s=86254 max_unique=49109 (unique%=18.7) z=0.617 rate=221/s elapsed=1631s
+[2026-05-21T04:57:16.089782] drop=365000 p=0.99999 <s>_win=281.0 max_s=130019 max_unique=65158 (unique%=24.9) z=0.615 rate=219/s elapsed=1668s
+[2026-05-21T04:57:56.226983] drop=370000 p=0.99999 <s>_win=270.7 max_s=98376 max_unique=50075 (unique%=19.1) z=0.615 rate=217/s elapsed=1708s
+[2026-05-21T04:58:32.832596] drop=375000 p=1.00000 <s>_win=244.8 max_s=103628 max_unique=52942 (unique%=20.2) z=0.616 rate=215/s elapsed=1745s
+[2026-05-21T04:59:10.695044] drop=380000 p=1.00000 <s>_win=304.3 max_s=99859 max_unique=51478 (unique%=19.6) z=0.615 rate=213/s elapsed=1782s
+[2026-05-21T04:59:45.693581] drop=385000 p=1.00000 <s>_win=232.4 max_s=133443 max_unique=69082 (unique%=26.4) z=0.616 rate=212/s elapsed=1817s
+[2026-05-21T05:00:23.262932] drop=390000 p=1.00000 <s>_win=276.5 max_s=132406 max_unique=70039 (unique%=26.7) z=0.616 rate=210/s elapsed=1855s
+[2026-05-21T05:01:00.943210] drop=395000 p=1.00000 <s>_win=272.0 max_s=95544 max_unique=56752 (unique%=21.6) z=0.616 rate=209/s elapsed=1893s
+[2026-05-21T05:01:38.756750] drop=400000 p=1.00000 <s>_win=280.1 max_s=130038 max_unique=63249 (unique%=24.1) z=0.616 rate=207/s elapsed=1930s
+[2026-05-21T05:01:39.056876] checkpoint saved at drop=400000
+[2026-05-21T05:02:14.810055] drop=405000 p=1.00000 <s>_win=233.3 max_s=90265 max_unique=48148 (unique%=18.4) z=0.617 rate=206/s elapsed=1966s
+[2026-05-21T05:02:54.938049] drop=410000 p=1.00000 <s>_win=300.1 max_s=106915 max_unique=59063 (unique%=22.5) z=0.616 rate=204/s elapsed=2007s
+[2026-05-21T05:03:33.319383] drop=415000 p=1.00000 <s>_win=262.5 max_s=83818 max_unique=48275 (unique%=18.4) z=0.616 rate=203/s elapsed=2045s
+[2026-05-21T05:04:11.615539] drop=420000 p=1.00000 <s>_win=273.5 max_s=117207 max_unique=64998 (unique%=24.8) z=0.616 rate=202/s elapsed=2083s
+[2026-05-21T05:04:48.126414] drop=425000 p=1.00000 <s>_win=261.1 max_s=138692 max_unique=73675 (unique%=28.1) z=0.618 rate=200/s elapsed=2120s
+[2026-05-21T05:05:28.034214] drop=430000 p=1.00000 <s>_win=275.1 max_s=91170 max_unique=46394 (unique%=17.7) z=0.616 rate=199/s elapsed=2160s
+[2026-05-21T05:06:05.767561] drop=435000 p=1.00000 <s>_win=261.4 max_s=106704 max_unique=56768 (unique%=21.7) z=0.617 rate=198/s elapsed=2197s
+[2026-05-21T05:06:44.516677] drop=440000 p=1.00000 <s>_win=285.9 max_s=103224 max_unique=53876 (unique%=20.6) z=0.616 rate=197/s elapsed=2236s
+[2026-05-21T05:07:21.785394] drop=445000 p=1.00000 <s>_win=267.1 max_s=163239 max_unique=81765 (unique%=31.2) z=0.617 rate=196/s elapsed=2273s
+[2026-05-21T05:08:01.956297] drop=450000 p=1.00000 <s>_win=303.5 max_s=83713 max_unique=46257 (unique%=17.6) z=0.615 rate=194/s elapsed=2314s
+[2026-05-21T05:08:02.289442] checkpoint saved at drop=450000
+[2026-05-21T05:08:39.290732] drop=455000 p=1.00000 <s>_win=242.6 max_s=131403 max_unique=59705 (unique%=22.8) z=0.615 rate=194/s elapsed=2351s
+[2026-05-21T05:09:13.829578] drop=460000 p=1.00000 <s>_win=286.3 max_s=152242 max_unique=69478 (unique%=26.5) z=0.616 rate=193/s elapsed=2386s
+[2026-05-21T05:09:52.294557] drop=465000 p=1.00000 <s>_win=243.8 max_s=83726 max_unique=43822 (unique%=16.7) z=0.616 rate=192/s elapsed=2424s
+[2026-05-21T05:10:29.718540] drop=470000 p=1.00000 <s>_win=283.1 max_s=110458 max_unique=60255 (unique%=23.0) z=0.616 rate=191/s elapsed=2461s
+[2026-05-21T05:11:05.882832] drop=475000 p=1.00000 <s>_win=260.6 max_s=63993 max_unique=34536 (unique%=13.2) z=0.617 rate=190/s elapsed=2498s
+[2026-05-21T05:11:43.013690] drop=480000 p=1.00000 <s>_win=260.2 max_s=114271 max_unique=60520 (unique%=23.1) z=0.617 rate=189/s elapsed=2535s
+[2026-05-21T05:12:22.516965] drop=485000 p=1.00000 <s>_win=275.8 max_s=108723 max_unique=52353 (unique%=20.0) z=0.617 rate=188/s elapsed=2574s
+[2026-05-21T05:13:00.891940] drop=490000 p=1.00000 <s>_win=266.4 max_s=109026 max_unique=52476 (unique%=20.0) z=0.616 rate=188/s elapsed=2613s
+[2026-05-21T05:13:40.711297] drop=495000 p=1.00000 <s>_win=292.6 max_s=157974 max_unique=75808 (unique%=28.9) z=0.615 rate=187/s elapsed=2652s
+[2026-05-21T05:14:15.738786] drop=500000 p=1.00000 <s>_win=255.4 max_s=141102 max_unique=70175 (unique%=26.8) z=0.616 rate=186/s elapsed=2687s
+[2026-05-21T05:14:16.105562] checkpoint saved at drop=500000
+[2026-05-21T05:14:53.050967] drop=505000 p=1.00000 <s>_win=268.9 max_s=98063 max_unique=52186 (unique%=19.9) z=0.617 rate=185/s elapsed=2725s
+[2026-05-21T05:15:31.063512] drop=510000 p=1.00000 <s>_win=257.9 max_s=90930 max_unique=46795 (unique%=17.9) z=0.617 rate=185/s elapsed=2763s
+[2026-05-21T05:16:09.513942] drop=515000 p=1.00000 <s>_win=285.0 max_s=124156 max_unique=64374 (unique%=24.6) z=0.616 rate=184/s elapsed=2801s
+[2026-05-21T05:16:45.927887] drop=520000 p=1.00000 <s>_win=270.5 max_s=91371 max_unique=47383 (unique%=18.1) z=0.617 rate=183/s elapsed=2838s
+[2026-05-21T05:17:22.706596] drop=525000 p=1.00000 <s>_win=277.9 max_s=85374 max_unique=47246 (unique%=18.0) z=0.616 rate=183/s elapsed=2874s
+[2026-05-21T05:18:01.793267] drop=530000 p=1.00000 <s>_win=258.3 max_s=79872 max_unique=40767 (unique%=15.6) z=0.616 rate=182/s elapsed=2913s
+[2026-05-21T05:18:39.722278] drop=535000 p=1.00000 <s>_win=256.9 max_s=86128 max_unique=46382 (unique%=17.7) z=0.617 rate=181/s elapsed=2951s
+[2026-05-21T05:19:17.831703] drop=540000 p=1.00000 <s>_win=264.9 max_s=66639 max_unique=37090 (unique%=14.1) z=0.617 rate=181/s elapsed=2990s
+[2026-05-21T05:19:56.954987] drop=545000 p=1.00000 <s>_win=310.9 max_s=143980 max_unique=71318 (unique%=27.2) z=0.614 rate=180/s elapsed=3029s
+[2026-05-21T05:20:36.119297] drop=550000 p=1.00000 <s>_win=269.0 max_s=75463 max_unique=38958 (unique%=14.9) z=0.615 rate=179/s elapsed=3068s
+[2026-05-21T05:20:36.520081] checkpoint saved at drop=550000
+[2026-05-21T05:21:12.875092] drop=555000 p=1.00000 <s>_win=242.6 max_s=100184 max_unique=55944 (unique%=21.3) z=0.617 rate=179/s elapsed=3105s
+[2026-05-21T05:21:52.071591] drop=560000 p=1.00000 <s>_win=276.7 max_s=64250 max_unique=33949 (unique%=13.0) z=0.617 rate=178/s elapsed=3144s
+[2026-05-21T05:22:27.593885] drop=565000 p=1.00000 <s>_win=261.0 max_s=123439 max_unique=59752 (unique%=22.8) z=0.617 rate=178/s elapsed=3179s
+[2026-05-21T05:23:05.824091] drop=570000 p=1.00000 <s>_win=288.0 max_s=194332 max_unique=98030 (unique%=37.4) z=0.616 rate=177/s elapsed=3218s
+[2026-05-21T05:23:41.639161] drop=575000 p=1.00000 <s>_win=242.7 max_s=89277 max_unique=48805 (unique%=18.6) z=0.617 rate=177/s elapsed=3253s
+[2026-05-21T05:24:17.867785] drop=580000 p=1.00000 <s>_win=280.3 max_s=180650 max_unique=89309 (unique%=34.1) z=0.616 rate=176/s elapsed=3290s
+[2026-05-21T05:24:50.812902] drop=585000 p=1.00000 <s>_win=239.3 max_s=119218 max_unique=63930 (unique%=24.4) z=0.618 rate=176/s elapsed=3322s
+[2026-05-21T05:25:28.704375] drop=590000 p=1.00000 <s>_win=297.2 max_s=87764 max_unique=48028 (unique%=18.3) z=0.616 rate=176/s elapsed=3360s
+[2026-05-21T05:26:04.195085] drop=595000 p=1.00000 <s>_win=267.1 max_s=64173 max_unique=36903 (unique%=14.1) z=0.616 rate=175/s elapsed=3396s
+[2026-05-21T05:26:40.775747] drop=600000 p=1.00000 <s>_win=241.6 max_s=138359 max_unique=69937 (unique%=26.7) z=0.618 rate=175/s elapsed=3432s
+[2026-05-21T05:26:41.209952] checkpoint saved at drop=600000
+[2026-05-21T05:26:41.645251] DONE wall=3433s peak_topples=211651 (80.74%) peak_unique=98030 (37.40% of L^3) final_p=1.00000
