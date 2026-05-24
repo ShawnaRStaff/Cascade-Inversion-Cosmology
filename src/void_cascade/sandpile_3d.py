@@ -168,6 +168,73 @@ def relax(
     return s, T, mask
 
 
+def relax_sequential(
+    state: MannaState3D,
+    rng: np.random.Generator,
+    track_support: bool = False,
+) -> tuple[int, int, np.ndarray | None]:
+    """Sequential (one-at-a-time) toppling, matching Huynh & Pruessner 2012.
+
+    Picks ONE unstable site uniformly at random, topples it (z -= 2, two
+    grains distributed independently and uniformly to its 6 neighbors,
+    possibly the same neighbor twice). Repeats until no unstable sites.
+
+    This is the canonical Abelian Manna model dynamics used in the
+    published literature. Our default `relax()` uses parallel updates
+    (all unstable sites topple in one sweep). Abelian property
+    guarantees identical FINAL state and identical unique-cells-toppled
+    set, but the SEQUENCE differs — so dynamic exponents (avalanche
+    size distribution P(s), area distribution P(a), duration) can
+    differ between the two implementations.
+
+    Use this function to verify our model is in the same universality
+    class as the published literature.
+    """
+    L = state.L
+    mask = np.zeros((L, L, L), dtype=bool) if track_support else None
+    s = 0
+    T = 0
+    while True:
+        # Find unstable sites.
+        unstable_flat = np.flatnonzero(state.z.ravel() >= 2)
+        if unstable_flat.size == 0:
+            break
+        # Pick ONE at random.
+        idx = unstable_flat[int(rng.integers(0, unstable_flat.size))]
+        LL = L * L
+        i = idx // LL
+        rem = idx - i * LL
+        j = rem // L
+        k = rem - j * L
+        # Topple.
+        state.z[i, j, k] -= 2
+        if mask is not None:
+            mask[i, j, k] = True
+        # Distribute 2 grains to independently sampled neighbors.
+        for _ in range(2):
+            d = int(rng.integers(0, 6))
+            ni, nj, nk = i, j, k
+            if d == 0:
+                ni += 1
+            elif d == 1:
+                ni -= 1
+            elif d == 2:
+                nj += 1
+            elif d == 3:
+                nj -= 1
+            elif d == 4:
+                nk += 1
+            else:
+                nk -= 1
+            if 0 <= ni < L and 0 <= nj < L and 0 <= nk < L:
+                state.z[ni, nj, nk] += 1
+            else:
+                state.grains_lost += 1
+        s += 1
+        T += 1
+    return s, T, mask
+
+
 def run(
     L: int,
     n_drops: int,
