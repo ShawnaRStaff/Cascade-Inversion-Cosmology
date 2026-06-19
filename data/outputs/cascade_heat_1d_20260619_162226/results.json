@@ -1,0 +1,70 @@
+{
+  "L": 60,
+  "n_steps": 2500,
+  "heat_per_crack": 0.15,
+  "seed": 7,
+  "scattered_model_critical_cooling": 0.003,
+  "clustered_tips_up_to_cooling": 0.7,
+  "critical_between": null,
+  "sweep": [
+    {
+      "cooling": 0.0,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 10.396629670560339
+    },
+    {
+      "cooling": 0.05,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 37.18647487052113
+    },
+    {
+      "cooling": 0.1,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 16.319015589525986
+    },
+    {
+      "cooling": 0.2,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 31.88105295992956
+    },
+    {
+      "cooling": 0.3,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 80.73259449652095
+    },
+    {
+      "cooling": 0.4,
+      "ran_away": true,
+      "first_release_step": 49,
+      "peak_heat_overall": 19.728785859947642
+    },
+    {
+      "cooling": 0.5,
+      "ran_away": true,
+      "first_release_step": 49,
+      "peak_heat_overall": 19.327633771803132
+    },
+    {
+      "cooling": 0.6,
+      "ran_away": true,
+      "first_release_step": 49,
+      "peak_heat_overall": 49.844000002338966
+    },
+    {
+      "cooling": 0.7,
+      "ran_away": true,
+      "first_release_step": 49,
+      "peak_heat_overall": 593.4692143028423
+    }
+  ],
+  "growth_demo": {
+    "early_10pct_mean_avalanche": 5.65,
+    "late_50pct_mean_avalanche": 229.395,
+    "max_avalanche": 1824
+  }
+}

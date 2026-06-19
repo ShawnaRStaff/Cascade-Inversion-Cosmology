@@ -1,0 +1,116 @@
+{
+  "params_fixed": {
+    "fracture_density": 1.0,
+    "fracture_relief": 1.0,
+    "drive_rate": 0.02,
+    "heat_per_crack": 0.15,
+    "diffuse": 0.2,
+    "melt_heat": 1.0,
+    "release_factor": 0.5
+  },
+  "L": 400,
+  "n_steps": 10000,
+  "seed": 7,
+  "critical_between": [
+    0.005,
+    0.0
+  ],
+  "rows": [
+    {
+      "cooling": 0.0,
+      "ran_away": true,
+      "first_release_step": 326,
+      "peak_heat_overall": 33.26710888200167,
+      "fraction_released_final": 1.0,
+      "hidden_cracks_at_first_release": 2413
+    },
+    {
+      "cooling": 0.005,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.7240941735737927,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.01,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.42532758377542385,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.02,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.28127630412381993,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.03,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.23586003818619064,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.05,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.19889046667179117,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.07,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.1816489991008069,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.1,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.16542676059187741,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.15,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.14610938942108176,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.2,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.1308302275581694,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.3,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.10652522472967821,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    },
+    {
+      "cooling": 0.5,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.07503969679546693,
+      "fraction_released_final": 0.0,
+      "hidden_cracks_at_first_release": 0
+    }
+  ]
+}

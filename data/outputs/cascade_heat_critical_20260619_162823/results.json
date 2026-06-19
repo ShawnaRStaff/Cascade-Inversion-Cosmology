@@ -1,0 +1,66 @@
+{
+  "L": 50,
+  "n_steps": 4000,
+  "cooling": 0.1,
+  "seed": 7,
+  "critical_between": [
+    0.0,
+    0.005
+  ],
+  "sweep": [
+    {
+      "heat_per_crack": 0.0,
+      "ran_away": false,
+      "first_release_step": null,
+      "peak_heat_overall": 0.0
+    },
+    {
+      "heat_per_crack": 0.005,
+      "ran_away": true,
+      "first_release_step": 3331,
+      "peak_heat_overall": 12494.084372084726
+    },
+    {
+      "heat_per_crack": 0.01,
+      "ran_away": true,
+      "first_release_step": 103,
+      "peak_heat_overall": 235.0301112191721
+    },
+    {
+      "heat_per_crack": 0.02,
+      "ran_away": true,
+      "first_release_step": 54,
+      "peak_heat_overall": 47.462838612885804
+    },
+    {
+      "heat_per_crack": 0.03,
+      "ran_away": true,
+      "first_release_step": 54,
+      "peak_heat_overall": 44.06512841466287
+    },
+    {
+      "heat_per_crack": 0.05,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 26.830573579841687
+    },
+    {
+      "heat_per_crack": 0.08,
+      "ran_away": true,
+      "first_release_step": 42,
+      "peak_heat_overall": 22.899079020382207
+    },
+    {
+      "heat_per_crack": 0.12,
+      "ran_away": true,
+      "first_release_step": 22,
+      "peak_heat_overall": 54.182017351784026
+    },
+    {
+      "heat_per_crack": 0.15,
+      "ran_away": true,
+      "first_release_step": 22,
+      "peak_heat_overall": 51.33655538415412
+    }
+  ]
+}
