@@ -1,0 +1,92 @@
+[
+  {
+    "geometry": "random",
+    "fraction_removed": 0.3,
+    "n_seeds": 5,
+    "leftover_spans_rate": 1.0,
+    "leftover_pieces_mean": 79.8,
+    "leftover_biggest_piece_frac_mean": 0.9989433572305109,
+    "old_carrier_fraction_mean": 0.4308865017361111
+  },
+  {
+    "geometry": "random",
+    "fraction_removed": 0.5,
+    "n_seeds": 5,
+    "leftover_spans_rate": 1.0,
+    "leftover_pieces_mean": 1147.0,
+    "leftover_biggest_piece_frac_mean": 0.9735460069444445,
+    "old_carrier_fraction_mean": 0.3075249565972222
+  },
+  {
+    "geometry": "random",
+    "fraction_removed": 0.7,
+    "n_seeds": 5,
+    "leftover_spans_rate": 0.2,
+    "leftover_pieces_mean": 6797.6,
+    "leftover_biggest_piece_frac_mean": 0.036011815058171075,
+    "old_carrier_fraction_mean": 0.18426830150462964
+  },
+  {
+    "geometry": "random",
+    "fraction_removed": 0.91,
+    "n_seeds": 5,
+    "leftover_spans_rate": 0.0,
+    "leftover_pieces_mean": 7345.2,
+    "leftover_biggest_piece_frac_mean": 0.0013261000602772753,
+    "old_carrier_fraction_mean": 0.05516673900462963
+  },
+  {
+    "geometry": "random",
+    "fraction_removed": 0.99,
+    "n_seeds": 5,
+    "leftover_spans_rate": 0.0,
+    "leftover_pieces_mean": 1073.6,
+    "leftover_biggest_piece_frac_mean": 0.002531645569620253,
+    "old_carrier_fraction_mean": 0.006251808449074074
+  },
+  {
+    "geometry": "connected",
+    "fraction_removed": 0.3,
+    "n_seeds": 5,
+    "leftover_spans_rate": 1.0,
+    "leftover_pieces_mean": 1028.6,
+    "leftover_biggest_piece_frac_mean": 0.9806342440095588,
+    "old_carrier_fraction_mean": 0.43071650752314816
+  },
+  {
+    "geometry": "connected",
+    "fraction_removed": 0.5,
+    "n_seeds": 5,
+    "leftover_spans_rate": 1.0,
+    "leftover_pieces_mean": 1521.8,
+    "leftover_biggest_piece_frac_mean": 0.9597005208333332,
+    "old_carrier_fraction_mean": 0.3071072048611111
+  },
+  {
+    "geometry": "connected",
+    "fraction_removed": 0.7,
+    "n_seeds": 5,
+    "leftover_spans_rate": 1.0,
+    "leftover_pieces_mean": 1747.6,
+    "leftover_biggest_piece_frac_mean": 0.9197178853457111,
+    "old_carrier_fraction_mean": 0.1838360821759259
+  },
+  {
+    "geometry": "connected",
+    "fraction_removed": 0.91,
+    "n_seeds": 5,
+    "leftover_spans_rate": 1.0,
+    "leftover_pieces_mean": 1335.2,
+    "leftover_biggest_piece_frac_mean": 0.8063692987743621,
+    "old_carrier_fraction_mean": 0.054662181712962964
+  },
+  {
+    "geometry": "connected",
+    "fraction_removed": 0.99,
+    "n_seeds": 5,
+    "leftover_spans_rate": 0.0,
+    "leftover_pieces_mean": 466.6,
+    "leftover_biggest_piece_frac_mean": 0.38571428571428573,
+    "old_carrier_fraction_mean": 0.005989583333333333
+  }
+]

@@ -3,6 +3,39 @@
 **Status:** First cycle complete, 2026-05-19 (Stages 1-4).
 **Stage 5 (larger-L finite-size test) added 2026-05-19 evening.**
 
+---
+
+## CORRECTION (2026-06-19): the central claim below is overturned
+
+M5's headline — that the substrate enters a **permanent, never-ending
+regime of catastrophic events** (the "the Big Bang never ended" reading) —
+does NOT survive scrutiny. It was an artifact of the model's **self-
+healing**: cells empty when they topple, then refill and re-fire
+indefinitely, and that recharge is the only reason the big events keep
+coming.
+
+When fracture is made **irreversible** (a cell cracks at most once and
+never heals — the physically faithful rule), the behaviour is completely
+different. At L=48, both fracture modes (sink and hole):
+
+- the largest single event in the entire run was **~33 cells (0.03% of the
+  lattice)**, versus the 50–71% sustained events reported below;
+- activity falls to effectively **zero** as the substrate finishes
+  fracturing (one quiet pass, ~98% fractured, then silence);
+- grain conservation exact; sink and hole identical.
+
+So the permanent catastrophe plateau described in Stages 2–5 is a property
+of the **self-healing sandpile, not of fracture**. Everything below this
+notice is preserved as originally written — we correct openly and do not
+delete the record — but must be read in light of this correction.
+
+Evidence: `src/void_cascade/irreversible.py` (tests in
+`tests/test_irreversible.py`), `scripts/run_m5_irreversible.py`, output
+`data/outputs/m5_irreversible_20260619_135411/`. Full reasoning in
+`docs/notes/open_holes_scrutiny.md` (hole #G).
+
+---
+
 Milestone 5 was originally framed in the ROADMAP as "implement an
 inversion rule when the percolation cluster spans the box." After M4
 showed that the model predicts a finite-time singularity at
