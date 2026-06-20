@@ -1,0 +1,43 @@
+{
+  "soc_grounding": {
+    "L": 20,
+    "tau": 1.2749481906017455,
+    "reference_2D_Manna": 1.27,
+    "n_avalanches": 2666,
+    "max": 1210
+  },
+  "front": {
+    "L": 48,
+    "cooling": 0.1,
+    "heat_per_crack": 0.1,
+    "ran_away": true,
+    "tip_step": 1836,
+    "final_released_fraction": 0.8606770833333334,
+    "released_at_snapshots": [
+      {
+        "after_tip": 0,
+        "n_released": 14
+      },
+      {
+        "after_tip": 1,
+        "n_released": 102
+      },
+      {
+        "after_tip": 2,
+        "n_released": 173
+      },
+      {
+        "after_tip": 4,
+        "n_released": 324
+      },
+      {
+        "after_tip": 8,
+        "n_released": 658
+      },
+      {
+        "after_tip": 16,
+        "n_released": 1342
+      }
+    ]
+  }
+}

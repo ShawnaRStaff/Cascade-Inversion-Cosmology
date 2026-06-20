@@ -92,3 +92,29 @@ shown to reproduce the cold-buildup → sudden-catastrophe under realistic
 cooling.** The next beats — the collapse/inversion (motion) and the
 expansion (front, sketched in `front_model_design_layer0.md`) — are still
 unbuilt.
+
+## Update 2026-06-19: 2D, on validated SOC — and the catastrophe is a FRONT
+
+The 1D results above are on degenerate 1D Manna (SOC check gave tau~0.78), so
+the 1D heat numbers are qualitatively right but quantitatively exaggerated.
+Rebuilt in 2D (`cascade_heat_2d.py`, `run_cascade_heat_2d.py`) on the
+M2-validated Manna rule:
+
+- **Grounded:** 2D avalanche exponent **tau = 1.275** — dead-on the validated
+  2D Manna value. The foundation is genuine SOC; 2D heat numbers are
+  trustworthy.
+- **Long quiet still holds:** at realistic cooling (0.1), it stayed quiet to
+  step **1836 of 3000**, then tipped.
+- **The catastrophe SPREADS AS A FRONT.** The released region grows from a
+  small seed outward — 14 → 102 → 173 → 324 → 658 → 1342 cells over 16 steps
+  (snapshots in `front_2d.png`: compact blobs that merge and sweep across to
+  86%). It does NOT pop everywhere at once.
+
+Why this matters: the tipping is **not simultaneous — it propagates
+spatially.** That is "expansion as a propagating wavefront of activity"
+(the README's own phrase), and it **emerged from the heat dynamics**, not
+built in. It links the buildup→catastrophe beat to the expansion beat.
+
+Caveats: single seed; front *speed* not characterized; it's the **activity
+boundary** spreading, not material motion — so the collapse/inversion
+(material falling in, needs momentum) is still unaddressed.
