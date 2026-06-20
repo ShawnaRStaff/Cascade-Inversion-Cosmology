@@ -1,0 +1,17 @@
+{
+  "buildup": {
+    "L": 100,
+    "build_steps": 2500,
+    "fuel_mean": 2.812,
+    "fuel_max": 4.0,
+    "loaded_fraction": 0.703,
+    "mean_cracks": 392.2569
+  },
+  "arc": {
+    "ignite_step": 23,
+    "fuel_burned_fraction": 1.0,
+    "max_burn_radius": 70.71067811865476,
+    "energy_residual": -7.275957614183426e-12,
+    "peak_density_step": 42
+  }
+}

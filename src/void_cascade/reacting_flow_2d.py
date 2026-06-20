@@ -50,8 +50,12 @@ def implosion_plus_fuel_ic(L, u0, R0, fuel0, rho0=1.0, P0=1.0):
 
 
 def run_end_to_end(L=160, u0=2.5, R0=50, fuel0=3.0, e_ign=2.5, steps=500, cfl=0.4,
-                   dx=1.0, band=4, snap_steps=(0,)) -> dict:
+                   dx=1.0, band=4, snap_steps=(0,), fuel_field=None) -> dict:
     rho, momx, momy, E, fuel = implosion_plus_fuel_ic(L, u0, R0, fuel0)
+    if fuel_field is not None:
+        # Use a substrate-loaded fuel field (emergent from the SOC buildup)
+        # instead of the imposed uniform fuel0.
+        fuel = fuel_field.astype(float).copy()
     c = L // 2
     sl = (slice(c - band, c + band), slice(c - band, c + band))
     total0 = float(E.sum() + fuel.sum())
