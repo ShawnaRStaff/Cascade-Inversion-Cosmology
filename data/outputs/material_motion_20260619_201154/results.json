@@ -1,0 +1,15 @@
+{
+  "N": 300,
+  "u0": 1.5,
+  "steps": 700,
+  "mass_residual": 1.1368683772161603e-13,
+  "energy_residual": 1.1368683772161603e-13,
+  "momentum_residual": -1.4210854715202004e-14,
+  "min_pressure": 0.14601453540488976,
+  "peak_central_density": 2.456651519742967,
+  "central_density_initial": 1.0044901375492319,
+  "peak_density_step": 208,
+  "central_heat_initial": 1.5117182114208356,
+  "central_heat_at_peak": 7.054510899328956,
+  "rebounded": true
+}
