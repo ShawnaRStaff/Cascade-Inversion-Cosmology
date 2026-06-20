@@ -1,0 +1,32 @@
+[
+  {
+    "mean_cracks_at_ignition": 52,
+    "grow_events": 6,
+    "final_size": 300,
+    "max_front_radius": 147.16657229140046,
+    "front_sustained_and_grew": true,
+    "ever_touched_edge": false,
+    "capped_at_max_size": true,
+    "propagate_steps_run": 153
+  },
+  {
+    "mean_cracks_at_ignition": 63,
+    "grow_events": 6,
+    "final_size": 300,
+    "max_front_radius": 146.21901381147393,
+    "front_sustained_and_grew": true,
+    "ever_touched_edge": false,
+    "capped_at_max_size": true,
+    "propagate_steps_run": 153
+  },
+  {
+    "mean_cracks_at_ignition": 57,
+    "grow_events": 6,
+    "final_size": 300,
+    "max_front_radius": 146.00342461736986,
+    "front_sustained_and_grew": true,
+    "ever_touched_edge": false,
+    "capped_at_max_size": true,
+    "propagate_steps_run": 150
+  }
+]

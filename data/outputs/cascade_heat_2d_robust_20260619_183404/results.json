@@ -1,0 +1,22 @@
+{
+  "fast_batch": {
+    "n": 8,
+    "all_ran_away": true,
+    "all_front": true,
+    "tip_step_mean": 1116.25,
+    "tip_step_std": 45.554225929105634,
+    "speed_mean": 0.06256997532236074,
+    "speed_std": 0.04284230550058855,
+    "speed_r2_mean": 0.4732057189534105
+  },
+  "slow_batch": {
+    "n": 3,
+    "all_ran_away": true,
+    "all_front": false,
+    "tip_steps": [
+      1235,
+      1149,
+      1211
+    ]
+  }
+}

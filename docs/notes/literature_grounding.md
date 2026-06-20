@@ -32,9 +32,13 @@ cited cosmology sources).
   **Resolved 2026-06-19:** the 2D model (`cascade_heat_2d.py`,
   `run_cascade_heat_2d.py`) gives tau = 1.275 -- dead-on the validated 2D
   Manna value. The avalanche foundation IS genuine, literature-matching SOC,
-  and the 2D heat numbers are trustworthy. Bonus: on this proper SOC the heat
-  catastrophe still tips after a long quiet AND spreads as a propagating
-  front (see `heat_model_findings.md`).
+  and the 2D heat numbers are trustworthy. (The avalanche grounding stands.
+  NOTE on the front: it briefly looked like a finite-size artifact (L=100
+  barely tipped) — but that was a confound (under-driving + hard edges). The
+  EDGELESS growing-substrate test (`cascade_heat_grow.py`) shows the front IS
+  real: it sustains at CONSTANT speed (~0.95 cells/step, linear, 3 seeds) with
+  no edge. So the front holds, in flat-local lattice units; geometry still
+  open. See `heat_model_findings.md`.)
 - **Percolation framework.** Stauffer & Aharony (percolation theory);
   cosmological phase-transition percolation Guth–Tye 1980, Turner–Weinberg–
   Widrow 1992, Gould–Tenkanen 2021. The *framework* is theirs; our measured

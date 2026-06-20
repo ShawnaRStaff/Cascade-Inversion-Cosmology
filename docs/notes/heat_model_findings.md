@@ -118,3 +118,52 @@ built in. It links the buildup→catastrophe beat to the expansion beat.
 Caveats: single seed; front *speed* not characterized; it's the **activity
 boundary** spreading, not material motion — so the collapse/inversion
 (material falling in, needs momentum) is still unaddressed.
+
+## CORRECTION 2026-06-19 (later): the front is a FINITE-SIZE ARTIFACT
+
+Robustness + a bigger lattice (`run_cascade_heat_2d_robust.py`,
+`run_cascade_heat_2d_frontspeed.py`) overturn the "spreads as a front" claim:
+
+- **L=40:** every seed tips (~step 1100, tight) and the release fills ~86%.
+- **L=100:** one seed **never tipped** in 6000 steps; the other tipped late
+  (step 5176) and the release stayed a **tiny localized blob (edge ~3.7
+  cells, speed ~0, R²≈0.04)** — it did NOT propagate.
+
+What happened: in a *small* lattice heat diffuses across the whole thing, so
+it sits near-uniformly hot — when one cell tips, the rest are already near
+melt, so the release goes off almost everywhere at once and *looks* like a
+fast front filling the box. At L=100 heat **dilutes into the surrounding
+cold**, so a hot spot barely forms and any tip is **quenched** before it can
+spread.
+
+So: the **expansion-as-front reading is NOT supported at realistic size**, and
+even the easy *tipping* was partly a small-L effect (at L=100 it barely
+fires). Same pattern as M5's finite-size ceiling — dramatic small, dissolves
+at scale. The buildup→tip mechanism is real but its size-robustness is now in
+serious doubt; the front claim is retracted.
+
+## RESOLUTION 2026-06-19 (edgeless test): the front IS real — the "artifact" was a confound
+
+The "finite-size artifact" conclusion above was itself premature (caught by
+Shawna): the L=100 run drove only 1 grain/step regardless of size, so the big
+lattice was **under-driven ~6x per cell** — AND it had hard edges that reflect
+energy. Both confound the answer.
+
+Removing both — `cascade_heat_grow.py` / `run_cascade_heat_grow.py`: an
+**edgeless, growing substrate** (fresh pre-loaded substrate padded ahead of
+the front, so no edge, no reflection, no wrap), loaded fairly and ignited at
+one spot — gives a clean answer:
+
+- The front **sustains and advances at CONSTANT speed** (~0.95 cells/step),
+  **linear** front-radius vs time, **identical across 3 seeds**, growing the
+  domain 6x and still going when we capped it (never touched an edge).
+
+So the catastrophe **does** propagate as a sustained front once the
+edge/under-driving confounds are removed. The earlier "fizzle at scale" was
+those confounds, not the physics. Constant speed = linear distance-time = the
+**prerequisite for a Hubble-like relation** — *within flat-local lattice units*
+(geometry still open). We ignited it (didn't wait for spontaneous tip), and
+it's the *activity* wavefront, not material motion.
+
+Net: front claim **un-retracted, with the right caveats**. The honest chain was
+looked-real(small) -> artifact-worry -> caught-confounds -> real-when-done-right.

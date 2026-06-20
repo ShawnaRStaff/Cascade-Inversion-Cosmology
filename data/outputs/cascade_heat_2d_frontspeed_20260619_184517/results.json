@@ -1,0 +1,16 @@
+{
+  "L": 100,
+  "cooling": 0.1,
+  "heat_per_crack": 0.12,
+  "caveat": "cells/step on a FLAT grid; physical distance/Hubble needs the (open) substrate geometry",
+  "runs": [
+    {
+      "seed": 1,
+      "tip_step": 5176,
+      "front_speed_cells_per_step": 0.0006108912728580411,
+      "fit_r2": 0.03827239238874014,
+      "fit_points": 140,
+      "edge_max": 3.7130825803529772
+    }
+  ]
+}
