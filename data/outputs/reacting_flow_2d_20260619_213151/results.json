@@ -1,0 +1,15 @@
+{
+  "L": 180,
+  "u0": 2.5,
+  "R0": 55,
+  "fuel0": 3.0,
+  "e_ign": 2.5,
+  "steps": 500,
+  "energy_residual": 2.9103830456733704e-11,
+  "ignite_step": 41,
+  "peak_central_density": 1.5990079335751821,
+  "peak_density_step": 81,
+  "final_burned_fraction": 1.0,
+  "fuel_burned_fraction": 1.0,
+  "max_burn_radius": 127.27922061357856
+}
