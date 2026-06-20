@@ -1,0 +1,48 @@
+{
+  "part_A": {
+    "fuel0": 3.0,
+    "e_ign": 2.5,
+    "propagated": true,
+    "final_burned_fraction": 1.0,
+    "front_speed": 1.0000000000000002,
+    "energy_residual": -4.547473508864641e-13
+  },
+  "fuel_sweep": [
+    {
+      "fuel": 0.0,
+      "burned": 0.0,
+      "propagated": false
+    },
+    {
+      "fuel": 0.5,
+      "burned": 0.0775,
+      "propagated": false
+    },
+    {
+      "fuel": 1.0,
+      "burned": 1.0,
+      "propagated": true
+    },
+    {
+      "fuel": 1.5,
+      "burned": 1.0,
+      "propagated": true
+    },
+    {
+      "fuel": 2.0,
+      "burned": 1.0,
+      "propagated": true
+    },
+    {
+      "fuel": 3.0,
+      "burned": 1.0,
+      "propagated": true
+    },
+    {
+      "fuel": 4.0,
+      "burned": 1.0,
+      "propagated": true
+    }
+  ],
+  "critical_fuel": 1.0
+}
