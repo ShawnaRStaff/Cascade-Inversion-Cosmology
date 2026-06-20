@@ -1,0 +1,35 @@
+[
+  {
+    "grow_events": 6,
+    "final_size": 300,
+    "max_front_radius": 147.27185746095552,
+    "front_speed": 0.5546184764074906,
+    "front_sustained_and_grew": true,
+    "conservation_residual": -1.4551915228366852e-11,
+    "boundary_lost": 9.478955253020412e-17,
+    "energy_in": 70258.08064719093,
+    "final_flipped_fraction": 0.6513333333333333
+  },
+  {
+    "grow_events": 6,
+    "final_size": 300,
+    "max_front_radius": 142.3411395205195,
+    "front_speed": 0.5324923622786983,
+    "front_sustained_and_grew": true,
+    "conservation_residual": 0.0,
+    "boundary_lost": 2.547356997949728e-15,
+    "energy_in": 70092.15967051157,
+    "final_flipped_fraction": 0.6538222222222222
+  },
+  {
+    "grow_events": 6,
+    "final_size": 300,
+    "max_front_radius": 143.024473430249,
+    "front_speed": 0.5428750278460419,
+    "front_sustained_and_grew": true,
+    "conservation_residual": -1.4551915228366852e-11,
+    "boundary_lost": 3.47317530119946e-17,
+    "energy_in": 70349.3596583973,
+    "final_flipped_fraction": 0.6459888888888888
+  }
+]
