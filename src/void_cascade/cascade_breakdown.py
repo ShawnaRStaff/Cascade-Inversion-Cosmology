@@ -212,6 +212,101 @@ def step_rigid(rho, momx, momy, E, load, p, rng, rigidity=0.0):
     return rho, momx, momy, E_final, load_final, ignited
 
 
+def step_melt(rho, momx, momy, E, load, p, rng, melt_frac=0.0):
+    """Like step() but cold cells absorb their post-LF kinetic energy as load.
+
+    After the fluid transport step, cells that are still cold (e_spec < e_ign)
+    convert a fraction `melt_frac` of their kinetic energy into mechanical stress
+    (load) rather than keeping it as motion. Hot cells flow freely.
+
+    Physical picture: cold crystalline cells are stiff walls. When hot plasma
+    pushes against them, they don't flow -- they get LOADED. That load can then
+    trigger more breakdown in the next step, potentially amplifying the cascade.
+
+    Conservation: E + load is EXACTLY conserved. melt_frac=0 -> identical to step().
+
+    The KE removed from cold cells = 0.5*(momx^2+momy^2)/rho * cold * melt_frac.
+    Momentum is scaled by sqrt(1-melt_frac) for cold cells so the KE reduction
+    matches exactly. E decreases by that amount; load increases by that amount.
+    """
+    load = drive(load, rng, p.drive_sites, p.drive_amount)
+    load, E = breakdown(load, rho, momx, momy, E, p.thr, p.hpc, p.e_ign, p.max_sweeps)
+    E, load, ignited = combust(rho, momx, momy, E, load, p.e_ign)
+
+    s = max_wave_speed(rho, momx, momy, E)
+    dt = p.cfl / max(s, 1e-9)
+    rho, momx, momy, E = lax_friedrichs_step(rho, momx, momy, E, 1.0, dt)
+
+    if melt_frac > 0.0:
+        e_spec = internal_energy(rho, momx, momy, E) / rho
+        cold = (e_spec < p.e_ign).astype(float)
+        KE_cell = 0.5 * (momx ** 2 + momy ** 2) / rho
+        absorbed = melt_frac * KE_cell * cold        # energy to absorb per cell
+        # Scale momentum: KE ∝ mom^2, so scaling mom by sqrt(1-f) removes fraction f.
+        # Capped at 1.0 to avoid domain error if melt_frac > 1.
+        mom_scale = np.where(cold.astype(bool),
+                             np.sqrt(max(1.0 - melt_frac, 0.0)), 1.0)
+        momx  = momx  * mom_scale
+        momy  = momy  * mom_scale
+        # Cap absorbed at E so E never goes negative cell-by-cell.
+        absorbed = np.minimum(absorbed, E)
+        E    = E    - absorbed
+        load = load + absorbed
+
+    return rho, momx, momy, E, load, ignited
+
+
+def run_melt_arc(
+    L=80, steps=3000, params=None, seed=0, sample_every=20, P0=1.0, melt_frac=0.0,
+):
+    """Cold substrate -> buildup -> tip, with melt-gated rigidity.
+
+    Identical to run_buildup_tip but uses step_melt throughout. Tracks n_hot
+    at each sample so the cascade shape (slow vs fast intensification) can be
+    compared across melt_frac values.
+
+    Returns tip_step, max_temp, energy_residual, n_hot_trace, t_axis.
+    """
+    p   = params if params is not None else BreakdownParams()
+    rng = np.random.default_rng(seed)
+    load = np.zeros((L, L))
+    rho  = np.ones((L, L))
+    momx = np.zeros((L, L))
+    momy = np.zeros((L, L))
+    E    = np.full((L, L), P0 / (GAMMA - 1.0))
+    e0      = total_energy(E, load)
+    driven  = 0.0
+    tip_step = None
+    max_temp = float((internal_energy(rho, momx, momy, E) / rho).max())
+    t_axis, n_hot_trace, temp_trace, load_trace = [], [], [], []
+
+    for t in range(steps):
+        rho, momx, momy, E, load, ignited = step_melt(
+            rho, momx, momy, E, load, p, rng, melt_frac=melt_frac,
+        )
+        driven += p.drive_sites * p.drive_amount
+        if tip_step is None and ignited:
+            tip_step = t
+        cur = float((internal_energy(rho, momx, momy, E) / rho).max())
+        max_temp = max(max_temp, cur)
+        if t % sample_every == 0:
+            e_spec = internal_energy(rho, momx, momy, E) / rho
+            t_axis.append(t)
+            n_hot_trace.append(int((e_spec >= p.e_ign).sum()))
+            temp_trace.append(cur)
+            load_trace.append(float(load.mean()))
+
+    return {
+        "L": L, "steps": steps, "tip_step": tip_step,
+        "max_temp": max_temp,
+        "energy_residual": total_energy(E, load) - (e0 + driven),
+        "t_axis": t_axis,
+        "n_hot_trace": n_hot_trace,
+        "temp_trace": temp_trace,
+        "load_trace": load_trace,
+    }
+
+
 def run_buildup_tip(L=80, steps=3000, params=None, seed=0, sample_every=15, P0=1.0):
     """Cold, empty substrate -> slow drive -> does it tip itself to plasma, and when?
     Returns the tip step (or None), the peak temperature, the conservation residual,
