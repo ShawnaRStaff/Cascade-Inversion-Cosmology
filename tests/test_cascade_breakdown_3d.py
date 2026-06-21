@@ -10,8 +10,10 @@ from void_cascade.cascade_breakdown_3d import (
     BreakdownParams3d,
     breakdown_3d,
     combust_3d,
+    correlation_length_3d,
     drive_3d,
     run_buildup_tip_3d,
+    run_onset_measurement_3d,
     total_energy_3d,
 )
 from void_cascade.material_motion_3d import internal_energy_3d
@@ -93,3 +95,58 @@ def test_fast_drive_3d_tips_after_quiet():
     assert r["tip_step"] is not None
     assert r["max_temp"] >= 2.5
     assert r["tip_step"] > 5
+
+
+# --- correlation_length_3d ---
+
+def test_correlation_length_3d_uniform_zero():
+    """Uniform field has no spatial structure -> correlation length = 0."""
+    field = np.ones((10, 10, 10))
+    assert correlation_length_3d(field) == 0.0
+
+
+def test_correlation_length_3d_broad_greater_than_sharp():
+    """A broad blob has a longer correlation length than a sharp one."""
+    L = 20
+    broad = np.zeros((L, L, L))
+    sharp = np.zeros((L, L, L))
+    c = L // 2
+    for di in range(-4, 5):
+        for dj in range(-4, 5):
+            for dk in range(-4, 5):
+                broad[c+di, c+dj, c+dk] = 1.0
+    for di in range(-1, 2):
+        for dj in range(-1, 2):
+            for dk in range(-1, 2):
+                sharp[c+di, c+dj, c+dk] = 1.0
+    assert correlation_length_3d(broad) > correlation_length_3d(sharp)
+
+
+def test_correlation_length_3d_non_negative():
+    rng = np.random.default_rng(0)
+    field = rng.random((12, 12, 12))
+    assert correlation_length_3d(field) >= 0.0
+
+
+# --- run_onset_measurement_3d ---
+
+def test_run_onset_3d_required_keys():
+    r = run_onset_measurement_3d(L=8, steps=50, seed=0)
+    for key in ("tip_step", "t_axis", "load_std", "corr_lengths", "n_hot"):
+        assert key in r, f"missing key: {key}"
+
+
+def test_run_onset_3d_series_lengths_match():
+    r = run_onset_measurement_3d(L=8, steps=60, seed=0, sample_every=10)
+    n = len(r["t_axis"])
+    assert len(r["load_std"])    == n
+    assert len(r["corr_lengths"]) == n
+    assert len(r["n_hot"])       == n
+
+
+def test_run_onset_3d_cold_control_no_tip():
+    """hpc=0 in 3D: no heat from breakdown -> never tips."""
+    p = BreakdownParams3d(hpc=0.0, drive_amount=1.0, drive_sites=4)
+    r = run_onset_measurement_3d(L=8, steps=100, params=p, seed=0)
+    assert r["tip_step"] is None
+    assert all(v == 0 for v in r["n_hot"])
