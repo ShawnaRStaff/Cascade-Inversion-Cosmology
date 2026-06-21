@@ -212,6 +212,90 @@ def step_rigid(rho, momx, momy, E, load, p, rng, rigidity=0.0):
     return rho, momx, momy, E_final, load_final, ignited
 
 
+def step_cool(rho, momx, momy, E, load, p, rng, cooling=0.0, e_floor=1.5):
+    """Like step() but hot cells bleed heat to the void each step.
+
+    After LF transport, any cell with specific internal energy above `e_floor`
+    loses `cooling` fraction of that excess:
+        delta_E = cooling * max(e_spec - e_floor, 0) * rho
+
+    Energy leaves the system -- total E+load decreases. Full accounting:
+        E + load + cumulative_cooled == E0 + total_driven.
+
+    cooling=0 -> numerically identical to step(); cooled_this_step=0.
+    Returns (rho, momx, momy, E, load, ignited, cooled_this_step).
+    """
+    load = drive(load, rng, p.drive_sites, p.drive_amount)
+    load, E = breakdown(load, rho, momx, momy, E, p.thr, p.hpc, p.e_ign, p.max_sweeps)
+    E, load, ignited = combust(rho, momx, momy, E, load, p.e_ign)
+    s = max_wave_speed(rho, momx, momy, E)
+    dt = p.cfl / max(s, 1e-9)
+    rho, momx, momy, E = lax_friedrichs_step(rho, momx, momy, E, 1.0, dt)
+
+    cooled = 0.0
+    if cooling > 0.0:
+        e_spec = internal_energy(rho, momx, momy, E) / rho
+        excess = np.maximum(e_spec - e_floor, 0.0)
+        # cooling <= 1 guarantees e_spec stays >= e_floor; cap at 1.0 for safety.
+        delta_E = min(cooling, 1.0) * excess * rho
+        E = E - delta_E
+        cooled = float(delta_E.sum())
+
+    return rho, momx, momy, E, load, ignited, cooled
+
+
+def run_cooling_arc(
+    L=80, steps=3000, params=None, seed=0, sample_every=20, P0=1.0, cooling=0.0,
+):
+    """Cold substrate -> buildup -> tip (or not), with per-step heat loss.
+
+    Uses step_cool throughout. Tracks cumulative energy lost to cooling for
+    full accounting: E + load + total_cooled == E0 + total_driven.
+
+    Returns tip_step, max_temp, energy_residual (should be ~0 with accounting),
+    total_cooled, t_axis, temp_trace, load_trace.
+    """
+    p         = params if params is not None else BreakdownParams()
+    e_floor   = P0 / (GAMMA - 1.0)
+    rng       = np.random.default_rng(seed)
+    load      = np.zeros((L, L))
+    rho       = np.ones((L, L))
+    momx      = np.zeros((L, L))
+    momy      = np.zeros((L, L))
+    E         = np.full((L, L), e_floor)
+    e0        = total_energy(E, load)
+    driven    = 0.0
+    cooled    = 0.0
+    tip_step  = None
+    max_temp  = float((internal_energy(rho, momx, momy, E) / rho).max())
+    t_axis, temp_trace, load_trace = [], [], []
+
+    for t in range(steps):
+        rho, momx, momy, E, load, ignited, dc = step_cool(
+            rho, momx, momy, E, load, p, rng, cooling=cooling, e_floor=e_floor,
+        )
+        driven += p.drive_sites * p.drive_amount
+        cooled += dc
+        if tip_step is None and ignited:
+            tip_step = t
+        cur = float((internal_energy(rho, momx, momy, E) / rho).max())
+        max_temp = max(max_temp, cur)
+        if t % sample_every == 0:
+            t_axis.append(t)
+            temp_trace.append(cur)
+            load_trace.append(float(load.mean()))
+
+    # Full accounting: E + load + cooled should equal E0 + driven
+    residual = total_energy(E, load) + cooled - (e0 + driven)
+    return {
+        "L": L, "steps": steps, "tip_step": tip_step,
+        "max_temp": max_temp,
+        "energy_residual": residual,
+        "total_cooled": cooled,
+        "t_axis": t_axis, "temp_trace": temp_trace, "load_trace": load_trace,
+    }
+
+
 def step_melt(rho, momx, momy, E, load, p, rng, melt_frac=0.0):
     """Like step() but cold cells absorb their post-LF kinetic energy as load.
 
