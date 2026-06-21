@@ -101,6 +101,71 @@ def step(rho, momx, momy, E, load, p, rng):
     return rho, momx, momy, E, load, ignited
 
 
+def correlation_length(field):
+    """Radial spatial correlation length of a 2D field, via FFT autocorrelation.
+
+    Returns the smallest r where the normalized radial ACF drops below 1/e.
+    Returns 0.0 for uniform fields (no spatial variation -> no structure).
+    Pure function: no side effects.
+    """
+    f = field - field.mean()
+    var = float((f ** 2).mean())
+    if var < 1e-12:
+        return 0.0
+    L = field.shape[0]
+    ft = np.fft.rfft2(f)
+    acf2d = np.fft.irfft2(ft * ft.conj(), s=field.shape).real / (L * L * var)
+    acf2d = np.roll(np.roll(acf2d, L // 2, 0), L // 2, 1)
+    cy, cx = np.mgrid[0:L, 0:L] - L // 2
+    r = np.sqrt(cy ** 2 + cx ** 2).astype(int).ravel()
+    r_max = L // 2
+    acf_r = np.bincount(r, weights=acf2d.ravel(), minlength=r_max + 1)[:r_max]
+    cnt   = np.bincount(r, minlength=r_max + 1)[:r_max].clip(1)
+    acf_r = acf_r / cnt
+    below = np.where(acf_r < 1.0 / np.e)[0]
+    return float(below[0]) if len(below) > 0 else float(r_max)
+
+
+def run_onset_measurement(L=80, steps=3000, params=None, seed=0, sample_every=15, P0=1.0):
+    """Track three onset observables during the buildup-to-tip arc.
+
+    At each sample step records:
+        n_over      : cells with load >= thr (proxy for avalanche activity)
+        corr_length : radial correlation length of the load field (spatial structure)
+        n_hot       : cells above ignition temperature (ignition front)
+
+    Returns dict with t_axis, n_over, corr_lengths, n_hot, tip_step.
+    """
+    p = params if params is not None else BreakdownParams()
+    rng = np.random.default_rng(seed)
+    load = np.zeros((L, L))
+    rho  = np.ones((L, L))
+    momx = np.zeros((L, L))
+    momy = np.zeros((L, L))
+    E    = np.full((L, L), P0 / (GAMMA - 1.0))
+    tip_step = None
+    t_axis, load_std_series, corr_lengths, n_hot_series = [], [], [], []
+    for t in range(steps):
+        rho, momx, momy, E, load, ignited = step(rho, momx, momy, E, load, p, rng)
+        if tip_step is None and ignited:
+            tip_step = t
+        if t % sample_every == 0:
+            e_spec = internal_energy(rho, momx, momy, E) / rho
+            t_axis.append(t)
+            # breakdown always clears cells above threshold, so n_over is always 0.
+            # load.std() is the honest proxy: grows as stress clusters (SOC onset).
+            load_std_series.append(float(load.std()))
+            corr_lengths.append(correlation_length(load))
+            n_hot_series.append(int((e_spec >= p.e_ign).sum()))
+    return {
+        "L": L, "steps": steps, "tip_step": tip_step,
+        "t_axis": t_axis,
+        "load_std": load_std_series,
+        "corr_lengths": corr_lengths,
+        "n_hot": n_hot_series,
+    }
+
+
 def step_rigid(rho, momx, momy, E, load, p, rng, rigidity=0.0):
     """Like step() but cold loaded cells express stored load as elastic pressure.
 
