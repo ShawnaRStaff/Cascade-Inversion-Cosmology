@@ -34,12 +34,38 @@ relaunch_on_demand() {
   local SWEEP_SUBDIR
   SWEEP_SUBDIR=$(cat .aws_fleet_sweep_dir 2>/dev/null) || return 1
   local JOB_FLAGS="--single-job ${L}:${SEED} --sweep-dir data/outputs/${SWEEP_SUBDIR}"
+
+  # Upload the latest checkpoint to S3 so the relaunched instance can resume
+  # rather than re-running from scratch. The presigned URL is base64-encoded
+  # to keep it safe for sed substitution (presigned URLs contain '&', '?', '=').
+  local S3_BUCKET="cascade-cosmo-ckpts-099623380651"
+  local CKPT_LOCAL="data/outputs/${SWEEP_SUBDIR}/L${L}_s${SEED}_ckpt.npz"
+  local CHECKPOINT_URL_B64=""
+  local CHECKPOINT_DEST_VAL=""
+  if [ -f "${CKPT_LOCAL}" ]; then
+    local S3_KEY="checkpoints/${SWEEP_SUBDIR}/L${L}_s${SEED}_ckpt.npz"
+    aws s3 mb "s3://${S3_BUCKET}" --region "${AWS_REGION}" 2>/dev/null || true
+    if aws s3 cp "${CKPT_LOCAL}" "s3://${S3_BUCKET}/${S3_KEY}" \
+        --region "${AWS_REGION}" 2>/dev/null; then
+      local PRESIGNED
+      PRESIGNED=$(aws s3 presign "s3://${S3_BUCKET}/${S3_KEY}" \
+        --region "${AWS_REGION}" --expires-in 86400 2>/dev/null || true)
+      if [ -n "${PRESIGNED}" ]; then
+        CHECKPOINT_URL_B64=$(echo "${PRESIGNED}" | base64 -w 0)
+        CHECKPOINT_DEST_VAL="${CKPT_LOCAL}"
+        echo "  checkpoint uploaded: ${S3_KEY}"
+      fi
+    fi
+  fi
+
   local USER_DATA
   USER_DATA=$(mktemp)
   sed -e "s|@REPO_URL@|${REPO_URL}|g" \
       -e "s|@BRANCH@|${BRANCH}|g" \
       -e "s|@SWEEP_FLAGS@|${JOB_FLAGS}|g" \
       -e "s|@SAFETY_HOURS@|${SAFETY_HOURS}|g" \
+      -e "s|@CHECKPOINT_URL_B64@|${CHECKPOINT_URL_B64}|g" \
+      -e "s|@CHECKPOINT_DEST@|${CHECKPOINT_DEST_VAL}|g" \
       aws/bootstrap.sh > "${USER_DATA}"
   local INSTANCE_ID
   INSTANCE_ID=$(aws ec2 run-instances \

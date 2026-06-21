@@ -125,6 +125,8 @@ for entry in "${JOBS[@]}"; do
     -e "s|@BRANCH@|${BRANCH}|g" \
     -e "s|@SWEEP_FLAGS@|${JOB_SWEEP_FLAGS}|g" \
     -e "s|@SAFETY_HOURS@|${SAFETY_HOURS}|g" \
+    -e "s|@CHECKPOINT_URL_B64@||g" \
+    -e "s|@CHECKPOINT_DEST@||g" \
     aws/bootstrap.sh > "${USER_DATA}"
 
   printf "  L=%-4d seed=%d ... " "${L}" "${seed}"

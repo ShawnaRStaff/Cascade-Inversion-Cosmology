@@ -22,13 +22,15 @@ REPO_URL="@REPO_URL@"
 BRANCH="@BRANCH@"
 SWEEP_FLAGS="@SWEEP_FLAGS@"
 SAFETY_HOURS="@SAFETY_HOURS@"
+CHECKPOINT_URL_B64="@CHECKPOINT_URL_B64@"   # base64-encoded presigned S3 URL; empty for fresh starts
+CHECKPOINT_DEST="@CHECKPOINT_DEST@"          # relative path inside repo (e.g. data/outputs/.../ckpt.npz)
 
 # Update + install minimal deps
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 # Ubuntu 24.04 dropped awscli from main repos; we don't need it on
 # the instance anyway (rsync handles result sync from the local side).
-apt-get install -y python3-venv python3-pip git rsync
+apt-get install -y python3-venv python3-pip git rsync wget
 
 # Safety: shut down the instance after SAFETY_HOURS, no matter what.
 # This is the hard cost cap. If the sweep hangs, the bill stops here.
@@ -50,6 +52,18 @@ python3 -m venv .venv
 mkdir -p /home/ubuntu/logs
 
 echo "starting" > /home/ubuntu/SWEEP_STATUS
+
+# Pre-seed checkpoint when recovering an interrupted job.
+# CHECKPOINT_URL_B64 is a base64-encoded presigned S3 URL (avoids sed
+# escaping hell with '?', '&', '=' in the query string). Empty for fresh
+# starts — the outer shell has already substituted the literal value here.
+if [ -n "${CHECKPOINT_URL_B64}" ] && [ -n "${CHECKPOINT_DEST}" ]; then
+    CHECKPOINT_URL=$(echo "${CHECKPOINT_URL_B64}" | base64 -d)
+    mkdir -p "$(dirname "${CHECKPOINT_DEST}")"
+    wget -q -O "${CHECKPOINT_DEST}" "${CHECKPOINT_URL}" \
+        && echo "checkpoint pre-seeded: ${CHECKPOINT_DEST}" \
+        || echo "WARNING: checkpoint download failed, starting fresh"
+fi
 
 # Write a sequential runner script: run sweep, then mark done, then
 # schedule self-termination. Putting these in one chain (vs. trying

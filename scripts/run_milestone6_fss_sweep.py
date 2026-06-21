@@ -63,14 +63,15 @@ from void_cascade.sandpile_3d import (  # noqa: E402
 )
 
 
-DEFAULT_L_LIST = [32, 48, 64, 96, 128]
-DEFAULT_SEEDS_PER_L = {32: 10, 48: 5, 64: 5, 96: 5, 128: 3}
+DEFAULT_L_LIST = [32, 48, 64, 96, 128, 192]
+DEFAULT_SEEDS_PER_L = {32: 10, 48: 5, 64: 5, 96: 5, 128: 3, 192: 3}
 DEFAULT_DROPS_FOR_L = {
     32: 100_000,
     48: 250_000,
     64: 600_000,
     96: 1_500_000,
     128: 4_000_000,
+    192: 13_500_000,   # (192/128)^3 * 4_000_000 ≈ 3.375x; L^3 scaling
 }
 SNAPSHOT_EVERY = 5_000
 CHECKPOINT_EVERY_DROPS = 50_000
