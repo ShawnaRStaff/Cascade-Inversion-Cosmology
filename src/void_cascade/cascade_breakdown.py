@@ -101,6 +101,52 @@ def step(rho, momx, momy, E, load, p, rng):
     return rho, momx, momy, E, load, ignited
 
 
+def step_rigid(rho, momx, momy, E, load, p, rng, rigidity=0.0):
+    """Like step() but cold loaded cells express stored load as elastic pressure.
+
+    A fraction min(rigidity, 1) of each cold cell's load is temporarily lent to
+    the fluid energy field before the LF step, making cold loaded cells stiffer
+    (higher pressure). After LF, the lent energy returns to load in cells still
+    cold; cells that crossed the ignition threshold during transport keep it as
+    thermal energy (the crystal melted -> elastic energy became heat).
+
+    Conservation: E + load is EXACTLY conserved (same as step). rigidity=0 ->
+    numerically identical to step().
+    """
+    load = drive(load, rng, p.drive_sites, p.drive_amount)
+    load, E = breakdown(load, rho, momx, momy, E, p.thr, p.hpc, p.e_ign, p.max_sweeps)
+    E, load, ignited = combust(rho, momx, momy, E, load, p.e_ign)
+
+    if rigidity > 0.0:
+        e_spec = internal_energy(rho, momx, momy, E) / rho
+        cold_pre = (e_spec < p.e_ign).astype(float)
+        frac = min(rigidity, 1.0)
+        lend = frac * load * cold_pre      # cold cells lend elastic energy to fluid
+        E_eff = E + lend
+        load_eff = load - lend
+    else:
+        E_eff, load_eff = E, load
+
+    s = max_wave_speed(rho, momx, momy, E_eff)
+    dt = p.cfl / max(s, 1e-9)
+    rho, momx, momy, E_out = lax_friedrichs_step(rho, momx, momy, E_eff, 1.0, dt)
+
+    if rigidity > 0.0:
+        e_spec_out = internal_energy(rho, momx, momy, E_out) / rho
+        cold_post = (e_spec_out < p.e_ign).astype(float)
+        # Return lent energy to load for cells still cold; cap at E_out so E ≥ 0.
+        # Global conservation holds regardless of cap:
+        #   E_final + load_final = (E_out - lend_return) + (load_eff + lend_return)
+        #                        = E_out + load_eff = E_eff + load_eff = E + load ✓
+        lend_return = np.minimum(frac * load_eff * cold_post, E_out)
+        E_final = E_out - lend_return
+        load_final = load_eff + lend_return
+    else:
+        E_final, load_final = E_out, load_eff
+
+    return rho, momx, momy, E_final, load_final, ignited
+
+
 def run_buildup_tip(L=80, steps=3000, params=None, seed=0, sample_every=15, P0=1.0):
     """Cold, empty substrate -> slow drive -> does it tip itself to plasma, and when?
     Returns the tip step (or None), the peak temperature, the conservation residual,
@@ -133,4 +179,67 @@ def run_buildup_tip(L=80, steps=3000, params=None, seed=0, sample_every=15, P0=1
         "max_temp": max_temp,
         "energy_residual": total_energy(E, load) - (e0 + driven),
         "t_axis": t_axis, "temp_trace": temp_trace, "load_trace": load_trace,
+    }
+
+
+def run_full_arc(
+    L=80, steps_buildup=3000, steps_after=600, params=None, seed=0,
+    sample_every=25, P0=1.0, rigidity=0.0,
+):
+    """Cold substrate -> slow buildup -> tip -> eruption front, all one continuous run.
+
+    Uses step_rigid throughout (reduces to step when rigidity=0). The same drive
+    and params continue after the tip -- no imposed phase change. Spatial shape is
+    captured via per-snapshot scalar summaries (n_hot, max_temp, max_speed, mean_load).
+
+    Returns:
+        tip_step        int or None
+        snapshots       list[dict] (t, n_hot, max_temp, max_speed, mean_load, phase)
+        energy_residual float   E+load - (E0 + total_driven); should be ~0
+        final_fields    dict    rho, momx, momy, E, load at end of run
+    """
+    p = params if params is not None else BreakdownParams()
+    rng = np.random.default_rng(seed)
+    load = np.zeros((L, L))
+    rho = np.ones((L, L))
+    momx = np.zeros((L, L))
+    momy = np.zeros((L, L))
+    E = np.full((L, L), P0 / (GAMMA - 1.0))
+    e0 = total_energy(E, load)
+    driven = 0.0
+    tip_step = None
+    snapshots = []
+
+    def _snap(t, phase):
+        e_spec = internal_energy(rho, momx, momy, E) / rho
+        speed = np.sqrt((momx / rho) ** 2 + (momy / rho) ** 2)
+        return {
+            "t": t,
+            "n_hot": int((e_spec >= p.e_ign).sum()),
+            "max_temp": float(e_spec.max()),
+            "max_speed": float(speed.max()),
+            "mean_load": float(load.mean()),
+            "phase": phase,
+        }
+
+    total_steps = steps_buildup + steps_after
+    for t in range(total_steps):
+        phase = "buildup" if t < steps_buildup else "eruption"
+        rho, momx, momy, E, load, ignited = step_rigid(
+            rho, momx, momy, E, load, p, rng, rigidity=rigidity,
+        )
+        driven += p.drive_sites * p.drive_amount
+
+        if tip_step is None and ignited:
+            tip_step = t
+            snapshots.append(_snap(t, "tip"))
+        elif t % sample_every == 0:
+            snapshots.append(_snap(t, phase))
+
+    return {
+        "L": L,
+        "tip_step": tip_step,
+        "snapshots": snapshots,
+        "energy_residual": total_energy(E, load) - (e0 + driven),
+        "final_fields": {"rho": rho, "momx": momx, "momy": momy, "E": E, "load": load},
     }
