@@ -36,11 +36,20 @@ apt-get install -y python3-venv python3-pip git rsync wget
 # This is the hard cost cap. If the sweep hangs, the bill stops here.
 shutdown -P +$(( SAFETY_HOURS * 60 )) &
 
+# Decode checkpoint URL here in the outer root shell, BEFORE the heredoc.
+# Unquoted heredocs execute $(...) with the outer shell's set -e in force;
+# base64 -d on empty input exits non-zero and would abort bootstrap.
+# Decoding here keeps the heredoc free of $(...) calls entirely.
+if [ -n "${CHECKPOINT_URL_B64}" ]; then
+    CHECKPOINT_URL=$(echo "${CHECKPOINT_URL_B64}" | base64 -d)
+else
+    CHECKPOINT_URL=""
+fi
+
 # Clone, set up, run.
-# Note: heredoc uses ${VAR} for outer-shell substitution (BRANCH,
-# REPO_URL, SWEEP_FLAGS were sed'd in above and are normal shell
-# variables). Variables we want the INNER shell (sudo -u ubuntu bash)
-# to evaluate at runtime must use \${VAR} to escape outer expansion.
+# ${VAR} in the heredoc is expanded by the outer shell — all variables
+# referenced below (BRANCH, REPO_URL, SWEEP_FLAGS, CHECKPOINT_URL,
+# CHECKPOINT_DEST) must be set in this outer shell before the heredoc.
 sudo -u ubuntu bash <<UBUNTU_EOF
 set -euxo pipefail
 cd /home/ubuntu
@@ -54,12 +63,11 @@ mkdir -p /home/ubuntu/logs
 echo "starting" > /home/ubuntu/SWEEP_STATUS
 
 # Pre-seed checkpoint when recovering an interrupted job.
-# CHECKPOINT_URL_B64 is a base64-encoded presigned S3 URL (avoids sed
-# escaping hell with '?', '&', '=' in the query string). Empty for fresh
-# starts — the outer shell has already substituted the literal value here.
-if [ -n "${CHECKPOINT_URL_B64}" ] && [ -n "${CHECKPOINT_DEST}" ]; then
+# CHECKPOINT_URL and CHECKPOINT_DEST are already expanded by the outer
+# shell above — no $(...) here, so no base64 under set -e risk.
+if [ -n "${CHECKPOINT_URL}" ] && [ -n "${CHECKPOINT_DEST}" ]; then
     mkdir -p "$(dirname "${CHECKPOINT_DEST}")"
-    wget -q -O "${CHECKPOINT_DEST}" "$(echo "${CHECKPOINT_URL_B64}" | base64 -d)" \
+    wget -q -O "${CHECKPOINT_DEST}" "${CHECKPOINT_URL}" \
         && echo "checkpoint pre-seeded: ${CHECKPOINT_DEST}" \
         || echo "WARNING: checkpoint download failed, starting fresh"
 fi
