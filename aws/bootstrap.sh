@@ -58,9 +58,8 @@ echo "starting" > /home/ubuntu/SWEEP_STATUS
 # escaping hell with '?', '&', '=' in the query string). Empty for fresh
 # starts — the outer shell has already substituted the literal value here.
 if [ -n "${CHECKPOINT_URL_B64}" ] && [ -n "${CHECKPOINT_DEST}" ]; then
-    CHECKPOINT_URL=$(echo "${CHECKPOINT_URL_B64}" | base64 -d)
     mkdir -p "$(dirname "${CHECKPOINT_DEST}")"
-    wget -q -O "${CHECKPOINT_DEST}" "${CHECKPOINT_URL}" \
+    wget -q -O "${CHECKPOINT_DEST}" "$(echo "${CHECKPOINT_URL_B64}" | base64 -d)" \
         && echo "checkpoint pre-seeded: ${CHECKPOINT_DEST}" \
         || echo "WARNING: checkpoint download failed, starting fresh"
 fi
