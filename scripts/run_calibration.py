@@ -1,62 +1,114 @@
-"""Dimensional calibration: what do the model's numbers imply in physical units?
+"""Dimensional calibration v2: two time anchors, measured event durations.
 
-The model is dimensionless. To reach physical numbers we need three ANCHORS:
-  - length: how many Mpc per lattice cell
-  - time:   how many years per step
-  - energy: how many Joules (or K) per model energy unit
-These are FREE until pinned by real observations. This script takes the
-*illustrative* anchors that M4 used (themselves free parameters from matching
-galaxy xi(r)) and works out what the model's speeds become -- and whether that
-is even self-consistent. No claim of truth; this is the grounding check the
-project's docs call the rate-limiter.
+Supersedes the 2026-06-19 illustrative check, which converted per-SWEEP
+front speeds with the per-DROP time anchor (2.6 Myr) and concluded
+"everything is 5-16x c". With the timescales separated (see
+src/void_cascade/calibration.py) the question becomes: does ANY anchor
+set satisfy all constraints simultaneously? This script works the
+constraint algebra with measured model quantities:
+
+  - fastest material speed: u0 ~ 1.5 cells/sweep (implosion fluid)
+  - peak-event durations: T = 1319/2265/4658/8039 sweeps at L=48/64/96/128
+    (measured from M6 finals; T ~ L^1.84)
+  - drops to the saturated era: ~3e6 (order of magnitude, L=96-128 runs)
+  - M4 length anchor: 8.5 h^-1 Mpc/cell from the xi(r) r_0 match
+  - energy anchor candidate: z=0.616 grains/cell <-> vacuum energy density
 """
 
 from __future__ import annotations
 
-# Physical constants
-C_KMS = 299_792.458          # speed of light, km/s
-KM_PER_MPC = 3.0857e19
-S_PER_MYR = 3.1557e13
+import sys
+from pathlib import Path
 
-# --- Illustrative anchors (FREE PARAMETERS, from M4 matching; not derived) ---
-MPC_PER_CELL = 8.5           # from xi(r) r_0 ~ 5 h^-1 Mpc match (M4)
-MYR_PER_STEP = 2.6           # from M4 time-mapping (1 drop ~ 2.6 Myr)
-# energy anchor: NONE pinned yet.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-CELL_STEP_TO_KMS = MPC_PER_CELL * KM_PER_MPC / (MYR_PER_STEP * S_PER_MYR)
+from void_cascade.calibration import (
+    RHO_VACUUM_J_M3,
+    consistency_report,
+    event_energy_j,
+    j_per_grain_from_vacuum_density,
+    min_myr_per_sweep,
+    myr_per_drop_from_epoch,
+)
 
-
-def to_kms(cells_per_step: float) -> float:
-    return cells_per_step * CELL_STEP_TO_KMS
+MPC_PER_CELL_M4 = 8.5        # xi(r) match (a fit, epoch p=0.65)
+U0_CELLS_PER_SWEEP = 1.5     # fastest MATERIAL speed (implosion fluid)
+T_PEAK = {48: 1319, 64: 2265, 96: 4658, 128: 8039}   # sweeps, measured
+TOPPLES_PEAK_L96 = 8.88e5    # measured mean
+N_DROPS_TO_SATURATED_ERA = 3e6   # order of magnitude (L=96-128)
+AGE_GYR = 13.8
 
 
 def main() -> None:
-    print("=== Dimensional calibration (ILLUSTRATIVE -- anchors are free) ===\n")
-    print(f"Anchors (free, from M4 matching): {MPC_PER_CELL} Mpc/cell, {MYR_PER_STEP} Myr/step")
-    print(f"=> 1 cell/step = {CELL_STEP_TO_KMS:.3e} km/s = {CELL_STEP_TO_KMS / C_KMS:.2f} x c\n")
+    print("=== Dimensional calibration v2 (two time anchors) ===\n")
 
-    speeds = {
-        "conserved-energy front (~0.54 cells/step)": 0.54,
-        "detonation front (~1.0 cells/step)": 1.0,
-        "implosion material velocity (u0 ~1.5 cells/step)": 1.5,
-    }
-    print(f"{'quantity':<48}{'km/s':>14}{'x c':>10}")
-    for name, v in speeds.items():
-        kms = to_kms(v)
-        print(f"{name:<48}{kms:>14.3e}{kms / C_KMS:>10.2f}")
+    # --- 1. The causal floor on sweep time under the M4 length anchor ---
+    t_sweep_min = min_myr_per_sweep(MPC_PER_CELL_M4, U0_CELLS_PER_SWEEP)
+    print(f"Causal minimum sweep time at {MPC_PER_CELL_M4} Mpc/cell: "
+          f"{t_sweep_min:.1f} Myr/sweep")
 
-    print("\nFinding: under these (free) M4 anchors, EVERY model speed of order")
-    print("1 cell/step is ~5-11x the speed of light. Implications:")
-    print(" - An ACTIVITY/pattern front (no material moving) may be superluminal")
-    print("   (like a phase velocity) -- consistent with our 'activity wavefront' label.")
-    print(" - But MATERIAL motion (the implosion fluid) must be sub-light -- so the")
-    print("   M4 anchors are NOT mutually consistent with material velocities: to make")
-    print(f"   u0 sub-light you'd need ~{to_kms(1.5)/C_KMS:.0f}x larger time/step or smaller Mpc/cell.")
-    print(" - The ENERGY anchor is entirely unpinned (no temperature/energy-density match yet).")
-    print("\nSo calibration is UNDERDETERMINED and the existing free anchors are")
-    print("over-constrained for material motion. Pinning length+time+energy from real")
-    print("data (e.g. a temperature for the plasma spike, an energy density for z=0.616)")
-    print("is the rate-limiter before any quantitative cosmological claim.")
+    # --- 2. Peak events under that floor: do they fit inside cosmic time? ---
+    print(f"\nPeak-event durations if material causality binds avalanche fronts:")
+    for L, T in T_PEAK.items():
+        dur_gyr = T * t_sweep_min / 1e3
+        print(f"  L={L:>3}: T={T} sweeps -> {dur_gyr:,.0f} Gyr "
+              f"({dur_gyr / AGE_GYR:.0f}x age of universe)")
+
+    # --- 3. SOC separation + epoch match: what sweep time is allowed? ---
+    t_drop = myr_per_drop_from_epoch(int(N_DROPS_TO_SATURATED_ERA), AGE_GYR)
+    print(f"\nDrive-time anchor from epoch match: {AGE_GYR} Gyr / "
+          f"{N_DROPS_TO_SATURATED_ERA:.0e} drops = {t_drop * 1e6:,.0f} yr/drop")
+    t_sweep_soc_max = t_drop / T_PEAK[96]
+    print(f"SOC separation (drop interval >> avalanche duration) at L=96 demands "
+          f"sweep time << {t_sweep_soc_max * 1e6:.2f} yr")
+    lmax_pc = (t_sweep_soc_max * 1e6) * 0.3066 / U0_CELLS_PER_SWEEP  # ly->pc via c*yr
+    print(f"With material causality that caps the cell at ~{lmax_pc:.2f} pc "
+          f"-- {MPC_PER_CELL_M4 * 1e6 / lmax_pc:.0e}x below the M4 length anchor.")
+
+    print("""
+CONCLUSION (the honest one): the four requirements
+  (a) material causality on avalanche fronts,
+  (b) SOC timescale separation,
+  (c) saturated era reached within 13.8 Gyr,
+  (d) cell scale = 8.5 Mpc from the xi(r) match
+are mutually exclusive by ~7 orders of magnitude. Dropping exactly one
+of them gives three self-consistent readings:
+
+  DROP (a): avalanche fronts are ACTIVITY/PATTERN fronts (phase-velocity
+    -like, no material transport) and may be superluminal; material
+    bounds apply only to the fluid-layer experiments. Then (b)+(c)+(d)
+    coexist: 8.5 Mpc cells, ~4,600 yr/drop, sweep time free below ~1 yr.
+    This makes front superluminality a REQUIRED framework claim.
+  DROP (c): the saturated era lies far beyond 13.8 Gyr -- today's
+    universe is PRE-saturation (early in the loading curve), and the
+    permanent catastrophe regime is the far future, not the present.
+    This contradicts the framework's post-bang reading.
+  DROP (d): cells are sub-parsec and the lattice models microphysics;
+    the xi(r) match at 8.5 Mpc/cell was a coincidence of shape. The
+    L<=192 boxes then span <100 pc and say nothing about LSS.
+""")
+
+    # --- 4. Energy anchor (independent of the time tangle) ---
+    eps = j_per_grain_from_vacuum_density(RHO_VACUUM_J_M3, MPC_PER_CELL_M4, 0.616)
+    e_peak = event_energy_j(int(TOPPLES_PEAK_L96), eps)
+    print(f"Energy anchor (z=0.616 <-> rho_vac, {MPC_PER_CELL_M4} Mpc cells):")
+    print(f"  1 grain = {eps:.2e} J")
+    print(f"  L=96 peak event moves {e_peak:.2e} J "
+          f"(~{e_peak / 1.35e70 * 100:.2f}% of observable-universe mass-energy)")
+    print(f"  L=128 box side = {MPC_PER_CELL_M4 * 128 / 1e3:.2f} Gpc "
+          f"(observable universe ~14 Gpc radius needs L~{int(14e3 / MPC_PER_CELL_M4)})")
+
+    # --- 5. Machine-checkable report for the preferred (activity-front) reading ---
+    r = consistency_report(
+        mpc_per_cell=MPC_PER_CELL_M4,
+        myr_per_sweep=1e-7,          # << 1 yr: activity front, c not binding
+        myr_per_drop=t_drop,
+        j_per_grain=eps,
+        material_speed_cells_per_sweep=0.0,  # no material claim at lattice level
+        peak_event_sweeps=T_PEAK[96],
+        age_gyr=AGE_GYR,
+    )
+    print(f"\nActivity-front reading violations: {r['violations'] or 'none'}")
 
 
 if __name__ == "__main__":

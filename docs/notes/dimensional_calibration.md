@@ -1,5 +1,39 @@
 # Dimensional calibration: the bridge to real numbers (and why it's the rate-limiter)
 
+**UPDATE 2026-08-17 (v2, supersedes the check below):** the 2026-06-19
+"16x c" result conflated the model's TWO timescales — it converted
+per-SWEEP front speeds with the per-DROP anchor (2.6 Myr). With sweep
+time and drop time separated (`src/void_cascade/calibration.py`, 8
+tests; `scripts/run_calibration.py` v2), the honest result is sharper:
+
+**The four requirements (a) material causality on avalanche fronts,
+(b) SOC timescale separation, (c) saturated era within 13.8 Gyr,
+(d) 8.5 Mpc/cell from the xi(r) match are mutually exclusive by ~7
+orders of magnitude.** Measured peak-event durations (T = 1319 ->
+8039 sweeps for L=48 -> 128, T ~ L^1.84) under the causal sweep-time
+floor (41.6 Myr at 8.5 Mpc cells) give single events lasting 55-334
+Gyr — 4-24x the age of the universe, worsening with L. Conversely,
+SOC separation plus the epoch match (~4,600 yr/drop) caps the sweep
+below ~1 yr, which with causality caps the cell at ~0.2 pc, 4x10^7
+below the LSS anchor.
+
+Exactly one requirement must be dropped; the three options are worked
+in the script output. The framework-preferred reading drops (a):
+avalanche fronts are activity/pattern fronts (phase-velocity-like, no
+material transport, superluminality permitted), while material bounds
+apply only to the fluid-layer experiments. Under that reading, all
+remaining constraints coexist with zero violations, and **front
+superluminality becomes a REQUIRED claim of the framework, not an
+embarrassment to hide** — it must be stated in any writeup.
+
+Energy anchor (first pinned candidate): identifying z = 0.616
+grains/cell with the vacuum energy density at 8.5 Mpc cells gives
+1 grain = 1.6x10^61 J; the L=96 peak event moves 2.8x10^67 J (~0.2% of
+the observable universe's mass-energy), and an observable-universe-
+sized box needs L ~ 1650 (the L=128 box spans 1.09 Gpc).
+
+---
+
 **Date:** 2026-06-19. Status: framework + a check, not a result. The model is
 dimensionless; reaching physical numbers needs anchors that are FREE until
 pinned by data. `scripts/run_calibration.py` does the illustrative arithmetic.
