@@ -1,9 +1,10 @@
 #!/bin/bash
 # monitor_and_recover.sh - persistent fleet monitor with auto-recovery.
 #
-# Runs sync_fleet.sh, then checks for spot-interrupted instances and
-# automatically relaunches them on on-demand pricing (no further
-# interruption risk). Repeats every 15 minutes.
+# Runs sync_fleet.sh, then checks for lost instances and automatically
+# relaunches them on spot pricing (~60% cheaper than on-demand), falling
+# back to on-demand only when spot capacity is unavailable. Repeats
+# every 15 minutes.
 #
 # This script is meant to be run via Monitor (or `nohup ... &`) so it
 # survives across syncs without needing user approval on each recovery.
@@ -12,10 +13,34 @@
 #   (a) AWS state is 'terminated' or 'shutting-down'
 #   (b) AWS API returns no record (aged out)
 # AND the corresponding final.npz is NOT present locally. In that case,
-# the loss was a spot interruption (not normal job completion); we
-# relaunch on on-demand.
+# the loss was an interruption (spot reclaim or the 120 h safety
+# shutdown), not normal completion; we relaunch from the latest local
+# checkpoint, losing at most the ~10 min since it was written.
 
 set -uo pipefail
+
+# Pure loss-detection decision logic (unit-tested in
+# tests/test_monitor_recovery_logic.py). See that file and
+# aws/lib_recovery.sh for the 2026-08-04 incident this guards against.
+source "$(dirname "${BASH_SOURCE[0]}")/lib_recovery.sh"
+
+# count_running_duplicates L SEED — how many pending/running instances
+# already carry this job's tags. Echoes 999 when the API call fails so
+# should_relaunch answers "no" (never launch blind).
+count_running_duplicates() {
+  local l="$1" seed="$2" out rc
+  out=$(aws ec2 describe-instances --region "${AWS_REGION}" \
+    --filters "Name=tag:Project,Values=cascade-inversion-cosmology" \
+              "Name=tag:L,Values=${l}" "Name=tag:Seed,Values=${seed}" \
+              "Name=instance-state-name,Values=pending,running" \
+    --query 'length(Reservations[].Instances[])' --output text 2>/dev/null)
+  rc=$?
+  if [ ${rc} -ne 0 ] || ! [[ "${out}" =~ ^[0-9]+$ ]]; then
+    echo "999"
+  else
+    echo "${out}"
+  fi
+}
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_DIR}"
@@ -109,22 +134,66 @@ while true; do
     TMP_STATE=$(mktemp)
     while IFS='|' read -r INSTANCE_ID DNS L SEED LAUNCHED; do
       STATE=$(aws ec2 describe-instances --region "${AWS_REGION}" --instance-ids "${INSTANCE_ID}" --query 'Reservations[0].Instances[0].State.Name' --output text 2>/dev/null)
-      if [ "${STATE}" = "terminated" ] || [ "${STATE}" = "shutting-down" ] || [ -z "${STATE}" ] || [ "${STATE}" = "None" ]; then
-        # Truly gone. Check if final.npz on disk.
-        if [ ! -f "data/outputs/${SWEEP_SUBDIR}/L${L}_s${SEED}_final.npz" ]; then
-          # No final.npz — this was a spot interruption, not normal completion. Recover.
-          NEW_ID=$(relaunch_on_demand "${L}" "${SEED}")
-          if [ -n "${NEW_ID}" ]; then
-            RECOVERED=$((RECOVERED+1))
-            RECOVERY_SUMMARY="${RECOVERY_SUMMARY} L=${L}s=${SEED}->ondemand(${NEW_ID})"
-          fi
-          # Drop the dead entry; the new one was appended by relaunch_on_demand.
-          continue
-        fi
-        # Final.npz present — normal completion, drop the dead entry.
+      RC=$?
+      CLASS=$(classify_instance_state "${RC}" "${STATE}")
+
+      if [ "${CLASS}" = "alive" ]; then
+        echo "${INSTANCE_ID}|${DNS}|${L}|${SEED}|${LAUNCHED}"
         continue
       fi
-      # Still alive — keep entry.
+
+      if [ "${CLASS}" = "indeterminate" ]; then
+        # API failure or unexpected state (incl. stopped): we know
+        # nothing for certain. Keep the entry, do NOT relaunch, and try
+        # again next cycle. Acting here is the 2026-08-04 bug.
+        echo "  [L=${L} s=${SEED}] ${INSTANCE_ID} state check indeterminate (rc=${RC} state='${STATE}') — no action" >&2
+        echo "${INSTANCE_ID}|${DNS}|${L}|${SEED}|${LAUNCHED}"
+        continue
+      fi
+
+      # CLASS = lost: API-confirmed terminated/shutting-down/aged-out.
+      HAS_FINAL="no"
+      [ -f "data/outputs/${SWEEP_SUBDIR}/L${L}_s${SEED}_final.npz" ] && HAS_FINAL="yes"
+      DUP_COUNT=$(count_running_duplicates "${L}" "${SEED}")
+
+      if [ "$(should_relaunch "${CLASS}" "${HAS_FINAL}" "${DUP_COUNT}")" = "yes" ]; then
+        NEW_ID=$(relaunch_on_demand "${L}" "${SEED}")
+        if [ -n "${NEW_ID}" ]; then
+          RECOVERED=$((RECOVERED+1))
+          RECOVERY_SUMMARY="${RECOVERY_SUMMARY} L=${L}s=${SEED}->ondemand(${NEW_ID})"
+        fi
+        # Drop the dead entry; the new one was appended by relaunch_on_demand.
+        continue
+      fi
+
+      if [ "${HAS_FINAL}" = "yes" ]; then
+        # Normal completion — drop the dead entry silently.
+        continue
+      fi
+
+      if [ "${DUP_COUNT}" != "0" ] && [ "${DUP_COUNT}" != "999" ]; then
+        # An instance with this job's tags is already running (e.g. a
+        # relaunch we lost track of). Adopt the newest one into fleet
+        # state instead of launching another duplicate.
+        ADOPTED=$(aws ec2 describe-instances --region "${AWS_REGION}" \
+          --filters "Name=tag:Project,Values=cascade-inversion-cosmology" \
+                    "Name=tag:L,Values=${L}" "Name=tag:Seed,Values=${SEED}" \
+                    "Name=instance-state-name,Values=pending,running" \
+          --query 'sort_by(Reservations[].Instances[], &LaunchTime)[-1].[InstanceId,PublicDnsName,LaunchTime]' \
+          --output text 2>/dev/null)
+        if [ -n "${ADOPTED}" ]; then
+          A_ID=$(echo "${ADOPTED}" | cut -f1)
+          A_DNS=$(echo "${ADOPTED}" | cut -f2)
+          A_TS=$(echo "${ADOPTED}" | cut -f3)
+          echo "  [L=${L} s=${SEED}] adopting already-running ${A_ID} instead of relaunching" >&2
+          echo "${A_ID}|${A_DNS}|${L}|${SEED}|${A_TS}"
+          continue
+        fi
+      fi
+
+      # Could not safely relaunch or adopt (e.g. duplicate count query
+      # failed). Keep the dead entry so we retry next cycle rather than
+      # forgetting the job.
       echo "${INSTANCE_ID}|${DNS}|${L}|${SEED}|${LAUNCHED}"
     done < .aws_fleet_state > "${TMP_STATE}"
     mv "${TMP_STATE}" .aws_fleet_state
