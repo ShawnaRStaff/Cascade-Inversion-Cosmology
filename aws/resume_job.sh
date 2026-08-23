@@ -31,7 +31,16 @@ AWS_REGION="${AWS_REGION:-us-west-2}"
 REPO_URL="https://github.com/ShawnaRStaff/Cascade-Inversion-Cosmology.git"
 BRANCH="main"
 SAFETY_HOURS=120
-S3_BUCKET="cascade-cosmo-ckpts-099623380651"
+# Account-agnostic bucket, guarded: refuse to proceed on a garbage
+# account id (STS failure would collapse the bucket name and the
+# checkpoint upload below would silently misfire).
+source "$(dirname "${BASH_SOURCE[0]}")/lib_recovery.sh"
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null)
+if [ "$(valid_account_id "${ACCOUNT_ID}")" != "yes" ]; then
+  echo "ERROR: cannot resolve AWS account id (got '${ACCOUNT_ID}') — check credentials"
+  exit 1
+fi
+S3_BUCKET="cascade-cosmo-ckpts-${ACCOUNT_ID}"
 
 CKPT_LOCAL="data/outputs/${SWEEP_SUBDIR}/L${L}_s${SEED}_ckpt.npz"
 if [ ! -f "${CKPT_LOCAL}" ]; then

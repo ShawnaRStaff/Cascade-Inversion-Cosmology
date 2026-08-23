@@ -62,3 +62,36 @@ should_relaunch() {
     echo "no"
   fi
 }
+
+# relaunch_preseed_verdict CKPT_EXISTS PRESIGNED_URL
+#
+# Echoes proceed | proceed-fresh | abort.
+#
+# A relaunch may only start a fresh (from-scratch) instance when there
+# is genuinely no local checkpoint to resume from. If a checkpoint
+# exists but the upload/presign chain produced no URL (account-id
+# lookup failed, bucket name collapsed, S3 error), launching anyway
+# would silently discard all progress — abort and retry next cycle.
+relaunch_preseed_verdict() {
+  local ckpt_exists="$1"
+  local presigned_url="$2"
+  if [ "${ckpt_exists}" = "no" ]; then
+    echo "proceed-fresh"
+  elif [ -n "${presigned_url}" ]; then
+    echo "proceed"
+  else
+    echo "abort"
+  fi
+}
+
+# valid_account_id ACCOUNT_ID — "yes" iff exactly 12 digits (the AWS
+# account-id format). Guards bucket names built as
+# cascade-cosmo-ckpts-${ACCOUNT_ID} from collapsing when the STS
+# lookup fails or prints "None".
+valid_account_id() {
+  if [[ "$1" =~ ^[0-9]{12}$ ]]; then
+    echo "yes"
+  else
+    echo "no"
+  fi
+}

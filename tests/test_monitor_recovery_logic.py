@@ -83,3 +83,31 @@ def test_no_relaunch_when_job_already_finished():
 def test_no_relaunch_when_duplicate_instances_exist():
     assert call("should_relaunch", "lost", "no", "1") == "no"
     assert call("should_relaunch", "lost", "no", "999") == "no"
+
+
+# --- relaunch_preseed_verdict(ckpt_exists, presigned_url) ---------------
+# Guards the account-agnostic S3 bucket path: if a local checkpoint
+# exists but the upload/presign chain failed (e.g. the account-id lookup
+# returned empty and the bucket name collapsed to a garbage prefix), a
+# relaunch would silently start FROM SCRATCH. That must abort instead.
+
+def test_preseed_fresh_start_allowed_only_without_checkpoint():
+    assert call("relaunch_preseed_verdict", "no", "") == "proceed-fresh"
+
+
+def test_preseed_proceeds_with_checkpoint_and_url():
+    assert call("relaunch_preseed_verdict", "yes", "https://bucket/key?sig=x") == "proceed"
+
+
+def test_preseed_aborts_when_checkpoint_exists_but_url_missing():
+    assert call("relaunch_preseed_verdict", "yes", "") == "abort"
+
+
+# --- valid_account_id(account_id) ---------------------------------------
+
+def test_valid_account_id_accepts_12_digits_only():
+    assert call("valid_account_id", "099623380651") == "yes"
+    assert call("valid_account_id", "") == "no"
+    assert call("valid_account_id", "None") == "no"
+    assert call("valid_account_id", "12345") == "no"
+    assert call("valid_account_id", "abc123456789") == "no"

@@ -63,25 +63,42 @@ relaunch_on_demand() {
   # Upload the latest checkpoint to S3 so the relaunched instance can resume
   # rather than re-running from scratch. The presigned URL is base64-encoded
   # to keep it safe for sed substitution (presigned URLs contain '&', '?', '=').
-  local S3_BUCKET="cascade-cosmo-ckpts-099623380651"
+  # The bucket is account-agnostic; if any link in the account-id -> upload ->
+  # presign chain fails while a local checkpoint EXISTS, we must abort the
+  # relaunch (relaunch_preseed_verdict) — launching without the pre-seed
+  # would silently restart the job from scratch.
+  local ACCOUNT_ID
+  ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null)
   local CKPT_LOCAL="data/outputs/${SWEEP_SUBDIR}/L${L}_s${SEED}_ckpt.npz"
+  local CKPT_EXISTS="no"
+  [ -f "${CKPT_LOCAL}" ] && CKPT_EXISTS="yes"
+  local PRESIGNED=""
   local CHECKPOINT_URL_B64=""
   local CHECKPOINT_DEST_VAL=""
-  if [ -f "${CKPT_LOCAL}" ]; then
+  if [ "${CKPT_EXISTS}" = "yes" ] && [ "$(valid_account_id "${ACCOUNT_ID}")" = "yes" ]; then
+    local S3_BUCKET="cascade-cosmo-ckpts-${ACCOUNT_ID}"
     local S3_KEY="checkpoints/${SWEEP_SUBDIR}/L${L}_s${SEED}_ckpt.npz"
     aws s3 mb "s3://${S3_BUCKET}" --region "${AWS_REGION}" 2>/dev/null || true
     if aws s3 cp "${CKPT_LOCAL}" "s3://${S3_BUCKET}/${S3_KEY}" \
         --region "${AWS_REGION}" 2>/dev/null; then
-      local PRESIGNED
       PRESIGNED=$(aws s3 presign "s3://${S3_BUCKET}/${S3_KEY}" \
         --region "${AWS_REGION}" --expires-in 86400 2>/dev/null || true)
-      if [ -n "${PRESIGNED}" ]; then
-        CHECKPOINT_URL_B64=$(echo "${PRESIGNED}" | base64 -w 0)
-        CHECKPOINT_DEST_VAL="${CKPT_LOCAL}"
-        echo "  checkpoint uploaded: ${S3_KEY}"
-      fi
     fi
   fi
+  case "$(relaunch_preseed_verdict "${CKPT_EXISTS}" "${PRESIGNED}")" in
+    abort)
+      echo "  [L=${L} s=${SEED}] checkpoint exists but pre-seed failed (account='${ACCOUNT_ID}') — relaunch ABORTED, will retry next cycle" >&2
+      return 1
+      ;;
+    proceed)
+      CHECKPOINT_URL_B64=$(echo "${PRESIGNED}" | base64 -w 0)
+      CHECKPOINT_DEST_VAL="${CKPT_LOCAL}"
+      echo "  checkpoint uploaded: checkpoints/${SWEEP_SUBDIR}/L${L}_s${SEED}_ckpt.npz"
+      ;;
+    proceed-fresh)
+      : # no checkpoint anywhere — a genuine fresh start is correct
+      ;;
+  esac
 
   local USER_DATA
   USER_DATA=$(mktemp)
